@@ -1,5 +1,5 @@
 name: publish-node-package-action
-author: cloudcome <hi@ydr.me>
+author: 云淡然 <hi@ydr.me> (https://ydr.me)
 description: Publish a NodeJS package to NPM Repository or GitHub Packages
 
 inputs:
