@@ -45,6 +45,6 @@ jobs:
 
 | Name     | Required | Default  | Description                                                                                                            |
 | -------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `target` | true     | None     | Release target, optionally npm/github                                                                                  |
+| `target` | true     | None     | Release target, optionally `npm`/`github`                                                                              |
 | `token`  | false    | None     | Target authorization token, GitHub Packages target does not need, internally has automatically obtained `github.token` |
 | `tag`    | false    | `latest` | The version label to release, the default is latest                                                                    |
