@@ -5,9 +5,9 @@
   "scripts": {
     "prepare": "husky install"
   },
-  "author": "云淡然 <hi@ydr.me>",
-  "homepage": "https://github.com/cloudcome/oas-gen-ts",
-  "repository": "https://github.com/cloudcome/oas-gen-ts",
+  "author": "云淡然 <hi@ydr.me> (https://ydr.me)",
+  "homepage": "https://github.com/cloudcome/publish-node-package-action",
+  "repository": "https://github.com/cloudcome/publish-node-package-action",
   "license": "MIT",
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",
