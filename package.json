@@ -1,0 +1,21 @@
+{
+  "name": "publish-node-package-action",
+  "version": "1.0.0",
+  "description": "Publish a NodeJS package to NPM Repository or GitHub Packages",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "author": "云淡然 <hi@ydr.me>",
+  "homepage": "https://github.com/cloudcome/oas-gen-ts",
+  "repository": "https://github.com/cloudcome/oas-gen-ts",
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
+    "@commitlint/types": "^17.4.4",
+    "@types/prettier": "^2.7.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0",
+    "prettier": "^2.8.4"
+  }
+}
