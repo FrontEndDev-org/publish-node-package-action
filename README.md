@@ -27,12 +27,11 @@ jobs:
 **Requires GitHub Packages write access**
 
 ```yaml
-permissions:
-  packages: write
-
 jobs:
   publish-github:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v3
       - run: npm ci
@@ -46,6 +45,6 @@ jobs:
 
 | Name     | Required | Default  | Description                                                                                                            |
 | -------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `target` | true     | None     | Release target, optionally npm/github                                                                                  |
+| `target` | true     | None     | Release target, optionally `npm`/`github`                                                                              |
 | `token`  | false    | None     | Target authorization token, GitHub Packages target does not need, internally has automatically obtained `github.token` |
 | `tag`    | false    | `latest` | The version label to release, the default is latest                                                                    |
