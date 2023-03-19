@@ -27,12 +27,11 @@ jobs:
 **Requires GitHub Packages write access**
 
 ```yaml
-permissions:
-  packages: write
-
 jobs:
   publish-github:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v3
       - run: npm ci
