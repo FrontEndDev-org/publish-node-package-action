@@ -6,6 +6,7 @@
 Publish a NodeJS package to NPM Repository or GitHub Packages
 
 # Publish to NPM Repository
+
 ```yaml
 jobs:
   publish-npm:
@@ -21,14 +22,16 @@ jobs:
 ```
 
 # Publish to GitHub Packages
+
 **Requires GitHub Packages write access**
 
 ```yaml
+permissions:
+  packages: write
+
 jobs:
   publish-github:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
     steps:
       - uses: actions/checkout@v3
       - run: npm ci
@@ -41,8 +44,7 @@ jobs:
 # Inputs
 
 | Name     | Required | Default  | Description                                                                                                            |
-|----------|----------|----------|------------------------------------------------------------------------------------------------------------------------|
+| -------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `target` | true     | None     | Release target, optionally npm/github                                                                                  |
 | `token`  | false    | None     | Target authorization token, GitHub Packages target does not need, internally has automatically obtained `github.token` |
 | `tag`    | false    | `latest` | The version label to release, the default is latest                                                                    |
-
