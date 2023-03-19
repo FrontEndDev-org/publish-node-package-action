@@ -1,6 +1,7 @@
 # publish-node-package-action
 
 ![release](https://img.shields.io/github/v/release/cloudcome/publish-node-package-action)
+[![marketplace](https://img.shields.io/badge/marketplace-publish--node--package--action-blueviolet)](https://github.com/marketplace/actions/publish-node-package-action)
 ![license](https://img.shields.io/github/license/cloudcome/publish-node-package-action)
 
 Publish a NodeJS package to NPM Repository or GitHub Packages
