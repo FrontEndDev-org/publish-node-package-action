@@ -1,0 +1,70 @@
+name: npm publish
+author: cloudcome <hi@ydr.me>
+description: Publish a NodeJS package to NPM Repository or GitHub Packages
+
+inputs:
+  target:
+    description: Release target, optionally npm/github
+    required: true
+  token:
+    description: Target authorization token, GitHub Packages target does not need, internally has automatically obtained `github.token`
+    required: false
+  tag:
+    description: The version label to release, the default is latest
+    required: false
+    default: latest
+
+# https://actions-cool.github.io/github-action-branding/
+branding:
+  icon: 'package'
+  color: 'red'
+
+runs:
+  using: composite
+  steps:
+    - name: Make a backup of the original .npmrc file
+      shell: bash
+      run: cp .npmrc .npmrc-orgin 2> /dev/null || true
+
+    - name: Publish target is NPM Repository
+      if: inputs.target == 'npm'
+      shell: bash
+      run: |
+        echo "//registry.npmjs.org/:_authToken=${{ inputs.token }}" > .npmrc
+        echo "registry=https://registry.npmjs.org/" >> .npmrc
+        echo "always-auth=true" >> .npmrc
+
+    - name: Publish target is GitHub Packages
+      if: inputs.target == 'github'
+      shell: bash
+      run: |
+        echo "//npm.pkg.github.com/:_authToken=${{ github.token }}" > .npmrc
+        echo "registry=https://npm.pkg.github.com/" >> .npmrc
+        echo "always-auth=true" >> .npmrc
+    - name: Modify the package.json name to meet GitHub's naming requirements
+      if: inputs.target == 'github'
+      uses: actions/github-script@v6
+      with:
+        result-encoding: string
+        script: |
+          const pkg = require('./package.json');
+          // originName        ->  underlineName
+          // my-pkg            ->  my-pkg
+          // @my-scope/my-pkg  ->  my-scope__my-pkg
+          const underlineName = pkg.name.replace(/@(.*)\/(.*)/, '$1__$2');
+          // @ref https://github.com/actions/toolkit/blob/457303960f03375db6f033e214b9f90d79c3fe5c/packages/github/src/context.ts
+          const owner = context.payload.repository.owner.login;
+          pkg.name = '@' + owner + '/' + underlineName;
+          const fs = require('fs');
+          fs.writeFileSync('package.json', JSON.stringify(pkg), 'utf8');
+
+    - name: Publish
+      shell: bash
+      run: npm publish --tag ${{ inputs.tag }}
+
+    - name: Restoring the original .npmrc file
+      if: always()
+      shell: bash
+      run: |
+        cp .npmrc-origin .npmrc 2> /dev/null || true
+        rm -rf .npmrc-bk
