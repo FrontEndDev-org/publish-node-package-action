@@ -32,5 +32,5 @@ jobs:
     steps:
       - uses: jacobsvante/tag-major-minor-action@v0
         with:
-          major: ${{ needs.release.outputs.release.major }}
-          minor: ${{ needs.release.outputs.release.minor }}
+          major: ${{ needs.release.outputs.major }}
+          minor: ${{ needs.release.outputs.minor }}
