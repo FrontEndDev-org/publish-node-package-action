@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/cloudcome/publish-node-package-action/compare/v1.2.1...v1.3.0) (2023-03-20)
+
+
+### Features
+
+* 修改当前 action 发版策略，更符合 GitHub 官方 Action 的要求 ([d2c7e6c](https://github.com/cloudcome/publish-node-package-action/commit/d2c7e6c5ed33d9c3607c1cb2cfbd8f3d43a2cbb1))
+
+
+### Bug Fixes
+
+* 修复版本号传递错误的问题 ([f908e76](https://github.com/cloudcome/publish-node-package-action/commit/f908e76d2ae0e5f538256cc79360eb6ac34eb221))
+
 ## [1.2.1](https://github.com/cloudcome/publish-node-package-action/compare/v1.2.0...v1.2.1) (2023-03-20)
 
 
