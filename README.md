@@ -4,9 +4,15 @@
 [![marketplace](https://img.shields.io/badge/marketplace-publish--node--package--action-blueviolet)](https://github.com/marketplace/actions/publish-node-package-action)
 ![license](https://img.shields.io/github/license/cloudcome/publish-node-package-action)
 
-Publish a NodeJS package to NPM Repository or GitHub Packages
+Publish a NodeJS package to NPM or GitHub Packages
 
 # Publish to NPM Repository
+
+PreRequirements
+
+- Make sure you've stored a NPM **Classic Token** (an "Automation" token) as a secret in your repository. You can
+  generate one at <https://www.npmjs.com/settings/your-username/tokens>.
+- If you want to publish scope package, You need to apply to create an organization on npmjs.com，at <https://www.npmjs.com/org/create>.
 
 ```yaml
 jobs:
@@ -24,7 +30,18 @@ jobs:
 
 # Publish to GitHub Packages
 
-**Requires GitHub Packages write access**
+PreRequirements
+
+- Requires GitHub Packages write access
+- No need to publish token
+
+Notes
+
+- GitHub Packages `name` may change after release, in two cases:
+  1. For example, the original name `my-pkg` will be changed to `@ownermy-kg`, where `owner` is the name of the
+     owner of the current repository
+  2. For example, the original name `@my-scopemy-pkg` will be changed to `@ownermy-scope__my-kg`, where `owner` is the owner name of the current repository
+- The name attribute in package.json in the repository will not be modified
 
 ```yaml
 jobs:
@@ -45,6 +62,10 @@ jobs:
 
 | Name     | Required | Default  | Description                                                                                                            |
 | -------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `target` | true     | None     | Release target, optionally `npm`/`github`                                                                              |
+| `target` | true     | None     | Packages target, optionally `npm`/`github`                                                                             |
 | `token`  | false    | None     | Target authorization token, GitHub Packages target does not need, internally has automatically obtained `github.token` |
 | `tag`    | false    | `latest` | The version label to release, the default is latest                                                                    |
+
+# Outputs
+
+Nothing!
