@@ -30,6 +30,7 @@ jobs:
     needs: release
     if: needs.release.outputs.release_created
     steps:
+      - uses: actions/checkout@v2
       - uses: jacobsvante/tag-major-minor-action@v0
         with:
           major: ${{ needs.release.outputs.major }}
