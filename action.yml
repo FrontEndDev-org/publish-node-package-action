@@ -32,7 +32,6 @@ runs:
       run: |
         echo "//registry.npmjs.org/:_authToken=${{ inputs.token }}" > .npmrc
         echo "registry=https://registry.npmjs.org/" >> .npmrc
-        echo "always-auth=true" >> .npmrc
 
     - name: Publish target is GitHub Packages
       if: inputs.target == 'github'
@@ -40,7 +39,6 @@ runs:
       run: |
         echo "//npm.pkg.github.com/:_authToken=${{ github.token }}" > .npmrc
         echo "registry=https://npm.pkg.github.com/" >> .npmrc
-        echo "always-auth=true" >> .npmrc
     - name: Modify the package.json name to meet GitHub's naming requirements
       if: inputs.target == 'github'
       uses: actions/github-script@v6
