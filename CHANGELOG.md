@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/cloudcome/publish-node-package-action/compare/v1.3.1...v1.4.0) (2023-03-20)
+
+
+### Features
+
+* remove unnecessary publish option ([25f95de](https://github.com/cloudcome/publish-node-package-action/commit/25f95de9f13f5213f2ec933354824595e23c2477))
+
 ## [1.3.1](https://github.com/cloudcome/publish-node-package-action/compare/v1.3.0...v1.3.1) (2023-03-20)
 
 
