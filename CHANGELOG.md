@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/cloudcome/publish-node-package-action/compare/v1.2.0...v1.2.1) (2023-03-20)
+
+
+### Bug Fixes
+
+* **docs:** fix documentation errors ([1880610](https://github.com/cloudcome/publish-node-package-action/commit/188061070b11783051533896092c892561ac618b))
+
 ## [1.2.0](https://github.com/cloudcome/publish-node-package-action/compare/v1.1.0...v1.2.0) (2023-03-20)
 
 
