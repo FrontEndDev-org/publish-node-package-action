@@ -10,8 +10,7 @@ Publish a NodeJS package to NPM or GitHub Packages
 
 PreRequirements
 
-- Make sure you've stored a NPM **Classic Token** (an "Automation" token) as a secret in your repository. You can
-  generate one at <https://www.npmjs.com/settings/your-username/tokens>.
+- Make sure you've stored a NPM **Classic Token** (an "Automation" token) as a secret in your repository. You can generate one at <https://www.npmjs.com/settings/your-username/tokens>.
 - If you want to publish scope package, You need to apply to create an organization on npmjs.com，at <https://www.npmjs.com/org/create>.
 
 ```yaml
@@ -38,9 +37,9 @@ PreRequirements
 Notes
 
 - GitHub Packages `name` may change after release, in two cases:
-  1. For example, the original name `my-pkg` will be changed to `@ownermy-kg`, where `owner` is the name of the
-     owner of the current repository
-  2. For example, the original name `@my-scopemy-pkg` will be changed to `@ownermy-scope__my-kg`, where `owner` is the owner name of the current repository
+  1. For example, the original name `my-pkg` will be changed to `@owner/my-kg`, where `owner` is the name of the
+     owner name of the current repository
+  2. For example, the original name `@my-scope/my-pkg` will be changed to `@owner/my-scope__my-kg`, where `owner` is the owner name of the current repository
 - The name attribute in package.json in the repository will not be modified
 
 ```yaml
