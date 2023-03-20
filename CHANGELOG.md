@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/cloudcome/publish-node-package-action/compare/v1.3.0...v1.3.1) (2023-03-20)
+
+
+### Bug Fixes
+
+* 修复 git 未检出的问题 ([edf7f75](https://github.com/cloudcome/publish-node-package-action/commit/edf7f75b454dd1f39903c26f82e7b42ac1742331))
+
 ## [1.3.0](https://github.com/cloudcome/publish-node-package-action/compare/v1.2.1...v1.3.0) (2023-03-20)
 
 
