@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/cloudcome/publish-node-package-action/compare/v1.1.0...v1.2.0) (2023-03-20)
+
+
+### Features
+
+* modify the description, optimize the document description ([ebed17a](https://github.com/cloudcome/publish-node-package-action/commit/ebed17a8772acd8e4ea56977dcb67201bce5b960))
+
 ## [1.1.0](https://github.com/cloudcome/publish-node-package-action/compare/v1.0.0...v1.1.0) (2023-03-19)
 
 ### Features
