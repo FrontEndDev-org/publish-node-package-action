@@ -6,8 +6,8 @@
     "prepare": "husky install"
   },
   "author": "云淡然 <hi@ydr.me> (https://ydr.me)",
-  "homepage": "https://github.com/cloudcome/publish-node-package-action",
-  "repository": "https://github.com/cloudcome/publish-node-package-action",
+  "homepage": "https://github.com/FrontEndDev-org/publish-node-package-action",
+  "repository": "https://github.com/FrontEndDev-org/publish-node-package-action",
   "license": "MIT",
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",

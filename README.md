@@ -1,8 +1,8 @@
 # publish-node-package-action
 
-![release](https://img.shields.io/github/v/release/cloudcome/publish-node-package-action)
+![release](https://img.shields.io/github/v/release/FrontEndDev-org/publish-node-package-action)
 [![marketplace](https://img.shields.io/badge/marketplace-publish--node--package--action-blueviolet)](https://github.com/marketplace/actions/publish-node-package-action)
-![license](https://img.shields.io/github/license/cloudcome/publish-node-package-action)
+![license](https://img.shields.io/github/license/FrontEndDev-org/publish-node-package-action)
 
 Publish a NodeJS package to NPM or GitHub Packages
 
@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm ci
       - run: npm run build
-      - uses: cloudcome/publish-node-package-action@v1
+      - uses: FrontEndDev-org/publish-node-package-action@v1
         with:
           target: npm
           token: ${{ secrets.NPM_TOKEN }}
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm ci
       - run: npm run build
-      - uses: cloudcome/publish-node-package-action@v1
+      - uses: FrontEndDev-org/publish-node-package-action@v1
         with:
           target: github
 ```
