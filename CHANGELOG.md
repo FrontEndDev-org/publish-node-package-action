@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v1.4.0...v1.5.0) (2023-03-21)
+
+
+### Features
+
+* change ownership to FrontEndDev-org ([06a821c](https://github.com/FrontEndDev-org/publish-node-package-action/commit/06a821ceccc52674d6ddaaadb193d15c8dc08faa))
+
 ## [1.4.0](https://github.com/cloudcome/publish-node-package-action/compare/v1.3.1...v1.4.0) (2023-03-20)
 
 
