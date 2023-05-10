@@ -10,12 +10,12 @@
   "repository": "https://github.com/FrontEndDev-org/publish-node-package-action",
   "license": "MIT",
   "devDependencies": {
-    "@commitlint/cli": "^17.4.4",
-    "@commitlint/config-conventional": "^17.4.4",
+    "@commitlint/cli": "^17.6.3",
+    "@commitlint/config-conventional": "^17.6.3",
     "@commitlint/types": "^17.4.4",
     "@types/prettier": "^2.7.2",
     "husky": "^8.0.3",
-    "lint-staged": "^13.2.0",
-    "prettier": "^2.8.4"
+    "lint-staged": "^13.2.2",
+    "prettier": "^2.8.8"
   }
 }
