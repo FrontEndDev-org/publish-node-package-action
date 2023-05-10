@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v1.5.0...v1.6.0) (2023-05-10)
+
+
+### Features
+
+* support for npm package provenance statements ([44656c9](https://github.com/FrontEndDev-org/publish-node-package-action/commit/44656c9a29c7ee586a8e8922a9272e1f4573f97b))
+
 ## [1.5.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v1.4.0...v1.5.0) (2023-03-21)
 
 
