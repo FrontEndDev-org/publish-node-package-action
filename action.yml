@@ -1,16 +1,16 @@
 name: publish node package action
 author: 云淡然 <hi@ydr.me> (https://ydr.me)
-description: Publish a NodeJS package to NPM or GitHub Packages
+description: Publish a NodeJS package to NPM Repository or GitHub Packages
 
 inputs:
   target:
-    description: Packages target, optionally npm/github
+    description: Publish target, optionally npm/github
     required: true
   token:
     description: Target authorization token, GitHub Packages target does not need, internally has automatically obtained `github.token`
     required: false
   tag:
-    description: The version label to release, the default is latest
+    description: The version tag to release, the default is latest
     required: false
     default: latest
 

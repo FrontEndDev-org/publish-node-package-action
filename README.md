@@ -4,7 +4,7 @@
 [![marketplace](https://img.shields.io/badge/marketplace-publish--node--package--action-blueviolet)](https://github.com/marketplace/actions/publish-node-package-action)
 ![license](https://img.shields.io/github/license/FrontEndDev-org/publish-node-package-action)
 
-Publish a NodeJS package to NPM or GitHub Packages
+Publish a NodeJS package to NPM Repository or GitHub Packages
 
 # Publish to NPM Repository
 
