@@ -12,11 +12,15 @@ PreRequirements
 
 - Make sure you've stored a NPM **Classic Token** (an "Automation" token) as a secret in your repository. You can generate one at <https://www.npmjs.com/settings/your-username/tokens>.
 - If you want to publish scope package, You need to apply to create an organization on npmjs.com，at <https://www.npmjs.com/org/create>.
+- Support for [npm package provenance statements](https://docs.npmjs.com/generating-provenance-statements)
 
 ```yaml
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Give permission to mint an ID-token
     steps:
       - uses: actions/checkout@v3
       - run: npm ci

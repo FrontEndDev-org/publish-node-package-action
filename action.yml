@@ -58,7 +58,7 @@ runs:
 
     - name: Publish
       shell: bash
-      run: npm publish --tag ${{ inputs.tag }}
+      run: npm publish --tag ${{ inputs.tag }} --provenance
 
     - name: Restoring the original .npmrc file
       if: always()
