@@ -32,6 +32,7 @@ runs:
       run: |
         echo "//registry.npmjs.org/:_authToken=${{ inputs.token }}" > .npmrc
         echo "registry=https://registry.npmjs.org/" >> .npmrc
+        echo "provenance=true" >> .npmrc
 
     - name: Publish target is GitHub Packages
       if: inputs.target == 'github'
@@ -58,11 +59,11 @@ runs:
 
     - name: Publish
       shell: bash
-      run: npm publish --tag ${{ inputs.tag }} --provenance
+      run: npm publish --tag ${{ inputs.tag }}
 
-    - name: Restoring the original .npmrc file
+    - name: Restore the original .npmrc file
       if: always()
       shell: bash
       run: |
-        cp .npmrc-origin .npmrc 2> /dev/null || true
-        rm -rf .npmrc-bk
+        rm -rf .npmrc
+        mv .npmrc-origin .npmrc 2> /dev/null || true
