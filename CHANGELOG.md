@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v1.6.0...v1.6.1) (2023-05-12)
+
+
+### Bug Fixes
+
+* 修复 npm publish provenance 问题 ([7773f5e](https://github.com/FrontEndDev-org/publish-node-package-action/commit/7773f5e584ec92425486ce4a0760a77f704fd9ad))
+
 ## [1.6.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v1.5.0...v1.6.0) (2023-05-10)
 
 
