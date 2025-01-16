@@ -33,7 +33,7 @@ async function main() {
     }
 
     if (core.isDebug()) {
-        core.debug(`Options: ${JSON.stringify(options, null, 2)}`);
+        core.debug(`options: ${JSON.stringify(options, null, 2)}`);
     }
 
     // 2. 重写 package.json + 发布
