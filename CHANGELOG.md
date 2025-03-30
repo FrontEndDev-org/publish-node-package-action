@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.1](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v2.5.0...v2.5.1) (2025-03-30)
+
+
+### Bug Fixes
+
+* **publish-packages:** 优化包名转换逻辑 ([5f2640e](https://github.com/FrontEndDev-org/publish-node-package-action/commit/5f2640e9aaf583616568a29e9e502a0bc2501e75))
+* 优化调试日志输出格式 ([ab5c6b3](https://github.com/FrontEndDev-org/publish-node-package-action/commit/ab5c6b3f379086db94e65f277981dedee2e0d8be))
+
 ## [2.5.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v2.4.0...v2.5.0) (2025-01-16)
 
 
