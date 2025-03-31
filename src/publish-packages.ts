@@ -81,6 +81,4 @@ export async function publishPackages(options: InternalPublishOptions) {
             }
         }
     }
-
-    return '';
 }
