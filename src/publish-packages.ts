@@ -64,8 +64,8 @@ export async function publishPackages(options: InternalPublishOptions) {
             const scopeMatches = pkg.name.match(/@(.*)\/(.*)/);
             const scope = scopeMatches ? scopeMatches[1] : '';
             const name = scopeMatches ? scopeMatches[2] : pkg.name;
-            const underlineName = scope && scope !== owner ? scope + '__' + name : name;
-            const ownerName = '@' + owner + '/' + underlineName;
+            const underlineName = scope && scope !== owner ? `${scope}__${name}` : name;
+            const ownerName = `@${owner}/${underlineName}`;
 
             core.info(`rewrite package name: ${pkg.name} -> ${ownerName}`);
             pkg.name = ownerName;
