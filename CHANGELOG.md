@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v2.5.1...v2.6.0) (2025-03-31)
+
+
+### Features
+
+* **publish-packages:** 优化包名改写逻辑 ([d94279b](https://github.com/FrontEndDev-org/publish-node-package-action/commit/d94279b1ab072b73e1715324a93acd7ad209377d))
+
 ## [2.5.1](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v2.5.0...v2.5.1) (2025-03-30)
 
 
