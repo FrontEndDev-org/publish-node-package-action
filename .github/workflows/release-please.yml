@@ -42,7 +42,6 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-nvm
-            - run: npm ci
             - run: npm run build
             - uses: peter-evans/create-pull-request@v7
               id: pr
