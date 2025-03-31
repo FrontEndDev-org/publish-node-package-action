@@ -27565,7 +27565,10 @@ async function publishPackages(options) {
       continue;
     }
     if (options.target === "github") {
-      const underlineName = pkg2.name.replace(/@(.*)\/(.*)/, "$1__$2");
+      const scopeMatches = pkg2.name.match(/@(.*)\/(.*)/);
+      const scope = scopeMatches ? scopeMatches[1] : "";
+      const name = scopeMatches ? scopeMatches[2] : pkg2.name;
+      const underlineName = scope && scope !== owner ? scope + "__" + name : name;
       const ownerName = "@" + owner + "/" + underlineName;
       core.info(`rewrite package name: ${pkg2.name}->${ownerName}`);
       pkg2.name = ownerName;
@@ -27607,7 +27610,7 @@ async function main() {
     options[key] = input === void 0 ? defaultVal : input;
   }
   if (core.isDebug()) {
-    core.debug(`Options: ${JSON.stringify(options, null, 2)}`);
+    core.debug(`options: ${JSON.stringify(options, null, 2)}`);
   }
   await publishPackages(options);
 }
