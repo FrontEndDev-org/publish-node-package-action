@@ -27568,9 +27568,9 @@ async function publishPackages(options) {
       const scopeMatches = pkg2.name.match(/@(.*)\/(.*)/);
       const scope = scopeMatches ? scopeMatches[1] : "";
       const name = scopeMatches ? scopeMatches[2] : pkg2.name;
-      const underlineName = scope && scope !== owner ? scope + "__" + name : name;
-      const ownerName = "@" + owner + "/" + underlineName;
-      core.info(`rewrite package name: ${pkg2.name}->${ownerName}`);
+      const underlineName = scope && scope !== owner ? `${scope}__${name}` : name;
+      const ownerName = `@${owner}/${underlineName}`;
+      core.info(`rewrite package name: ${pkg2.name} -> ${ownerName}`);
       pkg2.name = ownerName;
       fs$9.writeFileSync(pkgFile, JSON.stringify(pkg2), "utf-8");
     }
@@ -27583,7 +27583,6 @@ async function publishPackages(options) {
       }
     }
   }
-  return "";
 }
 async function main() {
   const token = core.getInput("token");
