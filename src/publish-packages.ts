@@ -67,7 +67,7 @@ export async function publishPackages(options: InternalPublishOptions) {
             const underlineName = scope && scope !== owner ? scope + '__' + name : name;
             const ownerName = '@' + owner + '/' + underlineName;
 
-            core.info(`rewrite package name: ${pkg.name}->${ownerName}`);
+            core.info(`rewrite package name: ${pkg.name} -> ${ownerName}`);
             pkg.name = ownerName;
             fs.writeFileSync(pkgFile, JSON.stringify(pkg), 'utf-8');
         }
