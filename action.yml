@@ -3,13 +3,13 @@ author: 云淡然 <hi@ydr.me> (https://ydr.me)
 description: Publish a NodeJS package to NPM Repository or GitHub Packages
 
 inputs:
+  token:
+    description: Target authorization token
+    required: true
   target:
     description: Packages target, optionally npm OR github
     required: false
     default: npm
-  token:
-    description: Target authorization token
-    required: true
   tag:
     description: The version tag to release, the default is latest
     required: false
@@ -17,12 +17,23 @@ inputs:
   dryRun:
     description: Pretend to publish, but don't actually upload to the registry.
     required: false
+    default: "false"
   includePrivate:
     description: publish private packages as well.
     required: false
+    default: "false"
   disableProvenance:
     description: Disable provenance for npm publish.
     required: false
+    default: "false"
+  syncNpmmirror:
+    description: Sync to npmmirror.com.
+    required: false
+    default: "false"
+  syncTimeout:
+    description: Sync timeout in seconds, default is 30s.
+    required: false
+    default: "30"
 
 # https://actions-cool.github.io/github-action-branding/
 branding:
