@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import type { InternalPublishOptions, PublishTarget } from './types';
 import { publishPackage } from './publish-package';
+import { syncPackage } from './sync-package';
 
 type PKG = {
     name: string;
@@ -75,6 +76,10 @@ export async function publishPackages(options: InternalPublishOptions) {
         try {
             core.info(`publish package: ${pkgPath} ${pkg.name}@${pkg.version} as ${options.tag} to ${options.target}`);
             publishPackage(pkgPath, options);
+
+            if (options.target === 'npm' && options.syncNpmmirror) {
+                await syncPackage(pkg.name, options);
+            }
         } finally {
             if (options.target === 'github') {
                 fs.writeFileSync(pkgPath, origin, 'utf-8');
