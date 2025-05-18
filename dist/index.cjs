@@ -27634,6 +27634,7 @@ async function publishPackages(options) {
       core.info(`publish package: ${pkgPath} ${pkg2.name}@${pkg2.version} as ${options.tag} to ${options.target}`);
       publishPackage(pkgPath, options);
       if (options.target === "npm" && options.syncNpmmirror) {
+        core.info(`sync package: ${pkgPath} ${pkg2.name}@${pkg2.version} to npmmirror.com`);
         await syncPackage(pkg2.name, options);
       }
     } finally {
