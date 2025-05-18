@@ -78,6 +78,7 @@ export async function publishPackages(options: InternalPublishOptions) {
             publishPackage(pkgPath, options);
 
             if (options.target === 'npm' && options.syncNpmmirror) {
+                core.info(`sync package: ${pkgPath} ${pkg.name}@${pkg.version} to npmmirror.com`);
                 await syncPackage(pkg.name, options);
             }
         } finally {
