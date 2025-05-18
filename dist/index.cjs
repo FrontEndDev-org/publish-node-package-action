@@ -13102,7 +13102,7 @@ function requireFetch() {
       this.emit("terminated", error2);
     }
   }
-  function fetch(input, init = {}) {
+  function fetch2(input, init = {}) {
     webidl.argumentLengthCheck(arguments, 1, { header: "globalThis.fetch" });
     const p = createDeferredPromise();
     let requestObject;
@@ -14013,7 +14013,7 @@ function requireFetch() {
     }
   }
   fetch_1 = {
-    fetch,
+    fetch: fetch2,
     Fetch,
     fetching,
     finalizeAndReportTiming
@@ -17279,7 +17279,7 @@ undici.setGlobalDispatcher = setGlobalDispatcher;
 undici.getGlobalDispatcher = getGlobalDispatcher;
 if (util$2.nodeMajor > 16 || util$2.nodeMajor === 16 && util$2.nodeMinor >= 8) {
   let fetchImpl = null;
-  undici.fetch = async function fetch(resource) {
+  undici.fetch = async function fetch2(resource) {
     if (!fetchImpl) {
       fetchImpl = requireFetch().fetch;
     }
@@ -19441,16 +19441,16 @@ function fetchWrapper(requestOptions) {
   let headers2 = {};
   let status;
   let url;
-  let { fetch } = globalThis;
+  let { fetch: fetch2 } = globalThis;
   if (requestOptions.request?.fetch) {
-    fetch = requestOptions.request.fetch;
+    fetch2 = requestOptions.request.fetch;
   }
-  if (!fetch) {
+  if (!fetch2) {
     throw new Error(
       "fetch is not set. Please pass a fetch implementation as new Octokit({ request: { fetch }}). Learn more at https://github.com/octokit/octokit.js/#fetch-missing"
     );
   }
-  return fetch(requestOptions.url, {
+  return fetch2(requestOptions.url, {
     method: requestOptions.method,
     body: requestOptions.body,
     redirect: requestOptions.request?.redirect,
@@ -22687,11 +22687,11 @@ var isGlob$1 = function isGlob(str, options) {
   if (isExtglob2(str)) {
     return true;
   }
-  var check = strictCheck;
+  var check2 = strictCheck;
   if (options && options.strict === false) {
-    check = relaxedCheck;
+    check2 = relaxedCheck;
   }
-  return check(str);
+  return check2(str);
 };
 var isGlob2 = isGlob$1;
 var pathPosixDirname = require$$0$9.posix.dirname;
@@ -25798,9 +25798,9 @@ function callFailureCallback$2(callback, error2) {
 function callSuccessCallback$2(callback, result) {
   callback(null, result);
 }
-var sync$7 = {};
-Object.defineProperty(sync$7, "__esModule", { value: true });
-sync$7.read = void 0;
+var sync$8 = {};
+Object.defineProperty(sync$8, "__esModule", { value: true });
+sync$8.read = void 0;
 function read$2(path2, settings2) {
   const lstat = settings2.fs.lstatSync(path2);
   if (!lstat.isSymbolicLink() || !settings2.followSymbolicLink) {
@@ -25819,7 +25819,7 @@ function read$2(path2, settings2) {
     throw error2;
   }
 }
-sync$7.read = read$2;
+sync$8.read = read$2;
 var settings$3 = {};
 var fs$5 = {};
 (function(exports2) {
@@ -25858,7 +25858,7 @@ settings$3.default = Settings$2;
 Object.defineProperty(out$1, "__esModule", { value: true });
 out$1.statSync = out$1.stat = out$1.Settings = void 0;
 const async$1 = async$2;
-const sync$6 = sync$7;
+const sync$7 = sync$8;
 const settings_1$3 = settings$3;
 out$1.Settings = settings_1$3.default;
 function stat(path2, optionsOrSettingsOrCallback, callback) {
@@ -25871,7 +25871,7 @@ function stat(path2, optionsOrSettingsOrCallback, callback) {
 out$1.stat = stat;
 function statSync(path2, optionsOrSettings) {
   const settings2 = getSettings$2(optionsOrSettings);
-  return sync$6.read(path2, settings2);
+  return sync$7.read(path2, settings2);
 }
 out$1.statSync = statSync;
 function getSettings$2(settingsOrOptions = {}) {
@@ -26081,9 +26081,9 @@ function callFailureCallback$1(callback, error2) {
 function callSuccessCallback$1(callback, result) {
   callback(null, result);
 }
-var sync$5 = {};
-Object.defineProperty(sync$5, "__esModule", { value: true });
-sync$5.readdir = sync$5.readdirWithFileTypes = sync$5.read = void 0;
+var sync$6 = {};
+Object.defineProperty(sync$6, "__esModule", { value: true });
+sync$6.readdir = sync$6.readdirWithFileTypes = sync$6.read = void 0;
 const fsStat$4 = out$1;
 const constants_1 = constants;
 const utils$7 = utils$9;
@@ -26094,7 +26094,7 @@ function read(directory, settings2) {
   }
   return readdir(directory, settings2);
 }
-sync$5.read = read;
+sync$6.read = read;
 function readdirWithFileTypes(directory, settings2) {
   const dirents = settings2.fs.readdirSync(directory, { withFileTypes: true });
   return dirents.map((dirent) => {
@@ -26116,7 +26116,7 @@ function readdirWithFileTypes(directory, settings2) {
     return entry2;
   });
 }
-sync$5.readdirWithFileTypes = readdirWithFileTypes;
+sync$6.readdirWithFileTypes = readdirWithFileTypes;
 function readdir(directory, settings2) {
   const names = settings2.fs.readdirSync(directory);
   return names.map((name) => {
@@ -26133,7 +26133,7 @@ function readdir(directory, settings2) {
     return entry2;
   });
 }
-sync$5.readdir = readdir;
+sync$6.readdir = readdir;
 var settings$2 = {};
 var fs$1 = {};
 (function(exports2) {
@@ -26182,7 +26182,7 @@ settings$2.default = Settings$1;
 Object.defineProperty(out$2, "__esModule", { value: true });
 out$2.Settings = out$2.scandirSync = out$2.scandir = void 0;
 const async = async$3;
-const sync$4 = sync$5;
+const sync$5 = sync$6;
 const settings_1$2 = settings$2;
 out$2.Settings = settings_1$2.default;
 function scandir(path2, optionsOrSettingsOrCallback, callback) {
@@ -26195,7 +26195,7 @@ function scandir(path2, optionsOrSettingsOrCallback, callback) {
 out$2.scandir = scandir;
 function scandirSync(path2, optionsOrSettings) {
   const settings2 = getSettings$1(optionsOrSettings);
-  return sync$4.read(path2, settings2);
+  return sync$5.read(path2, settings2);
 }
 out$2.scandirSync = scandirSync;
 function getSettings$1(settingsOrOptions = {}) {
@@ -26681,9 +26681,9 @@ class StreamProvider {
   }
 }
 stream$2.default = StreamProvider;
+var sync$4 = {};
 var sync$3 = {};
-var sync$2 = {};
-Object.defineProperty(sync$2, "__esModule", { value: true });
+Object.defineProperty(sync$3, "__esModule", { value: true });
 const fsScandir$1 = out$2;
 const common = common$3;
 const reader_1$3 = reader$1;
@@ -26739,9 +26739,9 @@ class SyncReader extends reader_1$3.default {
     this._storage.push(entry2);
   }
 }
-sync$2.default = SyncReader;
-Object.defineProperty(sync$3, "__esModule", { value: true });
-const sync_1$3 = sync$2;
+sync$3.default = SyncReader;
+Object.defineProperty(sync$4, "__esModule", { value: true });
+const sync_1$3 = sync$3;
 class SyncProvider {
   constructor(_root, _settings) {
     this._root = _root;
@@ -26752,7 +26752,7 @@ class SyncProvider {
     return this._reader.read();
   }
 }
-sync$3.default = SyncProvider;
+sync$4.default = SyncProvider;
 var settings$1 = {};
 Object.defineProperty(settings$1, "__esModule", { value: true });
 const path$2 = require$$0$9;
@@ -26783,7 +26783,7 @@ Object.defineProperty(out$3, "__esModule", { value: true });
 out$3.Settings = out$3.walkStream = out$3.walkSync = out$3.walk = void 0;
 const async_1$2 = async$5;
 const stream_1$4 = stream$2;
-const sync_1$2 = sync$3;
+const sync_1$2 = sync$4;
 const settings_1$1 = settings$1;
 out$3.Settings = settings_1$1.default;
 function walk(directory, optionsOrSettingsOrCallback, callback) {
@@ -27262,9 +27262,9 @@ class ProviderStream extends provider_1$1.default {
   }
 }
 stream.default = ProviderStream;
+var sync$2 = {};
 var sync$1 = {};
-var sync = {};
-Object.defineProperty(sync, "__esModule", { value: true });
+Object.defineProperty(sync$1, "__esModule", { value: true });
 const fsStat = out$1;
 const fsWalk = out$3;
 const reader_1 = reader;
@@ -27304,9 +27304,9 @@ class ReaderSync extends reader_1.default {
     return this._statSync(filepath, this._fsStatSettings);
   }
 }
-sync.default = ReaderSync;
-Object.defineProperty(sync$1, "__esModule", { value: true });
-const sync_1$1 = sync;
+sync$1.default = ReaderSync;
+Object.defineProperty(sync$2, "__esModule", { value: true });
+const sync_1$1 = sync$1;
 const provider_1 = provider;
 class ProviderSync extends provider_1.default {
   constructor() {
@@ -27326,7 +27326,7 @@ class ProviderSync extends provider_1.default {
     return this._reader.static(task.patterns, options);
   }
 }
-sync$1.default = ProviderSync;
+sync$2.default = ProviderSync;
 var settings = {};
 (function(exports2) {
   Object.defineProperty(exports2, "__esModule", { value: true });
@@ -27386,7 +27386,7 @@ var settings = {};
 const taskManager = tasks;
 const async_1 = async$7;
 const stream_1 = stream;
-const sync_1 = sync$1;
+const sync_1 = sync$2;
 const settings_1 = settings;
 const utils = utils$k;
 async function FastGlob(source, options) {
@@ -27531,6 +27531,62 @@ function publishPackage(pkgPath, options) {
     }
   }
 }
+async function sync(name) {
+  const syncURL = `https://registry-direct.npmmirror.com/${name}/sync?sync_upstream=true`;
+  try {
+    core.debug(`PUT ${syncURL}`);
+    const resp = await fetch(syncURL, {
+      method: "PUT"
+    });
+    const json = await resp.json();
+    core.debug(`response status = ${resp.status}`);
+    core.debug(`response headers = ${resp.headers}`);
+    core.debug(`response json = ${json}`);
+    if (json && typeof json === "object" && json.ok && json.logId && typeof json.logId === "string") {
+      return json.logId;
+    }
+    core.debug("响应结果不匹配");
+    return "";
+  } catch (err) {
+    core.debug("请求或响应错误");
+    core.debug(String(err));
+    return "";
+  }
+}
+async function check(name, logId) {
+  try {
+    const checkURL = `https://registry-direct.npmmirror.com/${name}/sync/log/${logId}`;
+    core.debug(`GET ${checkURL}`);
+    const resp = await fetch(checkURL);
+    const json = await resp.json();
+    core.debug(`response status = ${resp.status}`);
+    core.debug(`response headers = ${resp.headers}`);
+    core.debug(`response json = ${JSON.stringify(json)}`);
+    if (json && typeof json === "object" && json.syncDone) return true;
+    core.debug(`响应结果不匹配`);
+    return false;
+  } catch (err) {
+    core.debug(`请求或响应错误`);
+    core.debug(String(err));
+    return false;
+  }
+}
+async function syncPackage(name, options) {
+  const logId = await sync(name);
+  if (!logId) {
+    core.error("检查失败：未查询到同步日志 ID");
+    return true;
+  }
+  const startCheckTime = Date.now();
+  let checked = false;
+  let times = 0;
+  while (!checked && Date.now() - startCheckTime < options.syncTimeout) {
+    times++;
+    core.info(`第 ${times} 次同步结果检查`);
+    checked = await check(name, logId);
+    await new Promise((resolve) => setTimeout(resolve, 1e3));
+  }
+}
 const registries = {
   npm: "https://registry.npmjs.org",
   github: "https://npm.pkg.github.com"
@@ -27577,6 +27633,9 @@ async function publishPackages(options) {
     try {
       core.info(`publish package: ${pkgPath} ${pkg2.name}@${pkg2.version} as ${options.tag} to ${options.target}`);
       publishPackage(pkgPath, options);
+      if (options.target === "npm" && options.syncNpmmirror) {
+        await syncPackage(pkg2.name, options);
+      }
     } finally {
       if (options.target === "github") {
         fs$9.writeFileSync(pkgPath, origin, "utf-8");
@@ -27593,7 +27652,9 @@ async function main() {
     dryRun: core.getInput("dryRun") === "true",
     target: core.getInput("target"),
     includePrivate: core.getInput("includePrivate") === "true",
-    disableProvenance: core.getInput("disableProvenance") === "true"
+    disableProvenance: core.getInput("disableProvenance") === "true",
+    syncNpmmirror: core.getInput("syncNpmmirror") === "true",
+    syncTimeout: Number(core.getInput("syncTimeout"))
   };
   const defaults = {
     dryRun: false,
@@ -27601,7 +27662,9 @@ async function main() {
     includePrivate: false,
     tag: "latest",
     token: "",
-    disableProvenance: false
+    disableProvenance: false,
+    syncNpmmirror: false,
+    syncTimeout: 30
   };
   const options = {};
   for (const [key, defaultVal] of Object.entries(defaults)) {
