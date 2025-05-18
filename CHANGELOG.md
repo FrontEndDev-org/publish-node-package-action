@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.0.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v2.6.0...v3.0.0) (2025-05-18)
+
+
+### Features
+
+* **action:** 添加 npmmirror 同步功能 ([e762baf](https://github.com/FrontEndDev-org/publish-node-package-action/commit/e762baf9408221f242ed549738ad5a3af4e55fbc))
+* **publish:** 发布到 npm 时同步到 npmmirror ([c5cd0f6](https://github.com/FrontEndDev-org/publish-node-package-action/commit/c5cd0f6ea230d130b9bb063aa9864767173ccec3))
+* **src:** 添加 npmmirror 同步功能并设置同步超时 ([fac1947](https://github.com/FrontEndDev-org/publish-node-package-action/commit/fac19475486dd1cbbca829f3f6df38fecfdf5efe))
+* **src:** 添加同步 npm 包功能 ([c1fd0dd](https://github.com/FrontEndDev-org/publish-node-package-action/commit/c1fd0ddcaed08a56234c3ff4ecffc825944550ba))
+
+
+### Miscellaneous Chores
+
+* release 3.0.0 ([30abfbf](https://github.com/FrontEndDev-org/publish-node-package-action/commit/30abfbf5233b148e7f5f6c5ecd3612ed0f1a63cd))
+
 ## [2.6.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v2.5.1...v2.6.0) (2025-03-31)
 
 
