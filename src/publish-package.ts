@@ -16,16 +16,16 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
     core.info(`publish package sync: ${!options.disableSync}`);
     core.info(`publish package strip: ${!options.disableStrip}`);
 
-    const prePackJS = _1generatePrePackScript(meta, options);
-    const restorePkgJson = _2preparePackage(prePackJS, meta, options);
-    const restoreNpmrc = _3rewriteNpmrc(meta, options);
-    const isExist = _4checkPackageExist(meta);
+    const restoreNpmrc = _1rewriteNpmrc(meta, options);
+    const isExist = _2checkPackageExist(meta);
 
     if (isExist) {
-        restorePkgJson?.();
         restoreNpmrc();
         return;
     }
+
+    const prePackJS = _3generatePrePackScript(meta, options);
+    const restorePkgJson = _4preparePackage(prePackJS, meta, options);
 
     try {
         _5publishPackage(meta, options);
@@ -37,7 +37,48 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
     _6syncPackage(meta, options);
 }
 
-function _1generatePrePackScript(meta: InternalPublishMeta, options: InternalPublishOptions) {
+function _1rewriteNpmrc(meta: InternalPublishMeta, options: InternalPublishOptions) {
+    core.info(`rewriting .npmrc`);
+
+    // monorepo 下的所有 package 都参考根目录的 npmrc
+    const npmrcFile = path.resolve('.npmrc');
+    const exists = fs.existsSync(npmrcFile);
+    const origin = exists ? fs.readFileSync(npmrcFile, 'utf-8') : '';
+    const registry = registryRecord[options.target];
+    const restore = () => {
+        if (exists) {
+            core.info(`restore .npmrc`);
+            fs.writeFileSync(npmrcFile, origin);
+        } else {
+            core.info(`remove .npmrc`);
+            fs.unlinkSync(npmrcFile);
+        }
+    };
+
+    const authURL = new URL(registry);
+    core.info(`append .npmrc authToken(${options.token.length})`);
+    fs.appendFileSync(npmrcFile, `\n//${authURL.host}/:_authToken=${options.token}\n`, 'utf-8');
+
+    core.info('append .npmrc registry');
+    fs.appendFileSync(npmrcFile, `registry=${registry}\n`, 'utf-8');
+
+    return restore;
+}
+
+function _2checkPackageExist(meta: InternalPublishMeta) {
+    core.info(`checking package`);
+
+    try {
+        const options = core.isDebug() ? '--verbose' : '';
+        runCommand(`npm view ${meta.name}@${meta.version} ${options}`, { cwd: meta.cwd, stdio: 'ignore' });
+        core.info(`${meta.name}@${meta.version} is exists, skip publish`);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
+
+function _3generatePrePackScript(meta: InternalPublishMeta, options: InternalPublishOptions) {
     const scriptCode = `
 const fs = require('fs');
 const path = require('path');
@@ -54,7 +95,7 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg));
     return scriptFile;
 }
 
-function _2preparePackage(prePackJS: string, meta: InternalPublishMeta, options: InternalPublishOptions) {
+function _4preparePackage(prePackJS: string, meta: InternalPublishMeta, options: InternalPublishOptions) {
     const origin = fs.readFileSync(meta.pkgFile, 'utf-8');
     const pkg = JSON.parse(origin) as PKG;
     const restore = () => {
@@ -99,47 +140,6 @@ function _2preparePackage(prePackJS: string, meta: InternalPublishMeta, options:
     return restore;
 }
 
-function _3rewriteNpmrc(meta: InternalPublishMeta, options: InternalPublishOptions) {
-    core.info(`rewriting .npmrc`);
-
-    // monorepo 下的所有 package 都参考根目录的 npmrc
-    const npmrcFile = path.resolve('.npmrc');
-    const exists = fs.existsSync(npmrcFile);
-    const origin = exists ? fs.readFileSync(npmrcFile, 'utf-8') : '';
-    const registry = registryRecord[options.target];
-    const restore = () => {
-        if (exists) {
-            core.info(`restore .npmrc`);
-            fs.writeFileSync(npmrcFile, origin);
-        } else {
-            core.info(`remove .npmrc`);
-            fs.unlinkSync(npmrcFile);
-        }
-    };
-
-    const authURL = new URL(registry);
-    core.info(`append .npmrc authToken(${options.token.length})`);
-    fs.appendFileSync(npmrcFile, `\n//${authURL.host}/:_authToken=${options.token}\n`, 'utf-8');
-
-    core.info('append .npmrc registry');
-    fs.appendFileSync(npmrcFile, `registry=${registry}\n`, 'utf-8');
-
-    return restore;
-}
-
-function _4checkPackageExist(meta: InternalPublishMeta) {
-    core.info(`checking package`);
-
-    try {
-        const options = core.isDebug() ? '--verbose' : '';
-        runCommand(`npm view ${meta.name}@${meta.version} ${options}`, meta.cwd);
-        core.info(`${meta.name}@${meta.version} is exists, skip publish`);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
-
 function _5publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
     core.info('publishing package');
     const command = [
@@ -154,9 +154,9 @@ function _5publishPackage(meta: InternalPublishMeta, options: InternalPublishOpt
         .filter(Boolean)
         .join(' ');
 
-    runCommand('node --version', meta.cwd);
-    runCommand('npm --version', meta.cwd);
-    runCommand(command, meta.cwd);
+    runCommand('node --version', { cwd: meta.cwd });
+    runCommand('npm --version', { cwd: meta.cwd });
+    runCommand(command, { cwd: meta.cwd });
 }
 
 async function _6syncPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
