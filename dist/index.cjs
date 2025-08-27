@@ -27547,12 +27547,17 @@ async function syncPackage(name, options) {
 }
 async function publishPackage(meta, options) {
   core.info(`publish package root: ${meta.pkgRoot}`);
-  core.info(`publish package name: ${meta.name}`);
-  core.info(`publish package version: ${meta.version}`);
+  core.info(`publish package name: ${meta.pkgObject.name}`);
+  core.info(`publish package version: ${meta.pkgObject.version}`);
+  core.info(`publish package private: ${!!meta.pkgObject.private}`);
   core.info(`publish package tag: ${options.tag}`);
   core.info(`publish package target: ${options.target}`);
   core.info(`publish package sync: ${!options.disableSync}`);
   core.info(`publish package strip: ${!options.disableStrip}`);
+  if (meta.pkgObject.private && !options.includePrivate) {
+    core.info(`package is private, skip publish`);
+    return;
+  }
   const restoreNpmrc = _1rewriteNpmrc(meta, options);
   const isExist = _2checkPackageExist(meta);
   if (isExist) {
@@ -27560,10 +27565,6 @@ async function publishPackage(meta, options) {
     return;
   }
   const restorePkgJson = _3preparePackage(meta, options);
-  if (!restorePkgJson) {
-    restoreNpmrc();
-    return;
-  }
   try {
     _4publishPackage(meta, options);
   } finally {
@@ -27601,18 +27602,14 @@ function _2checkPackageExist(meta) {
   core.info(`checking package`);
   try {
     const options = core.isDebug() ? "--verbose" : "";
-    runCommand(`npm view ${meta.name}@${meta.version} ${options}`, { cwd: meta.pkgRoot, stdio: "ignore" });
-    core.info(`${meta.name}@${meta.version} is exists, skip publish`);
+    runCommand(`npm view ${meta.pkgObject.name}@${meta.pkgObject.version} ${options}`, { cwd: meta.pkgRoot, stdio: "ignore" });
+    core.info(`${meta.pkgObject.name}@${meta.pkgObject.version} is exists, skip publish`);
     return true;
   } catch (err) {
     return false;
   }
 }
 function _3preparePackage(meta, options) {
-  if (meta.pkgObject.private && !options.includePrivate) {
-    core.info(`package is private, skip publish`);
-    return;
-  }
   const prePackCode = `
 const fs = require('fs');
 const path = require('path');
@@ -27685,7 +27682,7 @@ async function _5syncPackage(meta, options) {
   if (options.target !== "npm") return;
   if (options.disableSync) return;
   core.info(`syncing package`);
-  await syncPackage(meta.name, options);
+  await syncPackage(meta.pkgObject.name, options);
 }
 async function publishPackages(options) {
   const registry = registryRecord[options.target];
@@ -27730,8 +27727,6 @@ async function publishPackages(options) {
       {
         ...pkgInfo,
         pkgsByName,
-        name: pkg.name,
-        version: pkg.version,
         repoOwner
       },
       options
