@@ -15,8 +15,6 @@ export type PublishOptions = {
 export type InternalPublishOptions = Required<PublishOptions>;
 
 export type InternalPublishMeta = {
-    name: string;
-    version: string;
     pkgRoot: string;
     pkgFile: string;
     pkgObject: PKG;

@@ -9,8 +9,8 @@ import { syncPackage } from './sync-package';
 
 export async function publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
     core.info(`publish package root: ${meta.pkgRoot}`);
-    core.info(`publish package name: ${meta.name}`);
-    core.info(`publish package version: ${meta.version}`);
+    core.info(`publish package name: ${meta.pkgObject.name}`);
+    core.info(`publish package version: ${meta.pkgObject.version}`);
     core.info(`publish package private: ${!!meta.pkgObject.private}`);
     core.info(`publish package tag: ${options.tag}`);
     core.info(`publish package target: ${options.target}`);
@@ -76,8 +76,8 @@ function _2checkPackageExist(meta: InternalPublishMeta) {
 
     try {
         const options = core.isDebug() ? '--verbose' : '';
-        runCommand(`npm view ${meta.name}@${meta.version} ${options}`, { cwd: meta.pkgRoot, stdio: 'ignore' });
-        core.info(`${meta.name}@${meta.version} is exists, skip publish`);
+        runCommand(`npm view ${meta.pkgObject.name}@${meta.pkgObject.version} ${options}`, { cwd: meta.pkgRoot, stdio: 'ignore' });
+        core.info(`${meta.pkgObject.name}@${meta.pkgObject.version} is exists, skip publish`);
         return true;
     } catch (err) {
         return false;
@@ -177,5 +177,5 @@ async function _5syncPackage(meta: InternalPublishMeta, options: InternalPublish
     if (options.disableSync) return;
 
     core.info(`syncing package`);
-    await syncPackage(meta.name, options);
+    await syncPackage(meta.pkgObject.name, options);
 }

@@ -71,8 +71,6 @@ export async function publishPackages(options: InternalPublishOptions) {
             {
                 ...pkgInfo,
                 pkgsByName,
-                name: pkg.name,
-                version: pkg.version,
                 repoOwner: repoOwner,
             },
             options,
