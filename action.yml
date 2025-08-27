@@ -26,8 +26,12 @@ inputs:
     description: Disable provenance for npm publish.
     required: false
     default: "false"
-  syncNpmmirror:
-    description: Sync to npmmirror.com.
+  disableSync:
+    description: Disable sync to https://npmmirror.com.
+    required: false
+    default: "false"
+  disableStrip:
+    description: Disable strip package unneeded keys.
     required: false
     default: "false"
   syncTimeout:
