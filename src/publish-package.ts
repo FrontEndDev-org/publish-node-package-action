@@ -5,6 +5,7 @@ import type { InternalPublishMeta, InternalPublishOptions, PKG } from './types';
 import core from '@actions/core';
 import { runCommand } from './utils';
 import { syncPackage } from './sync-package';
+import { glob } from 'fast-glob';
 
 export async function publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
   core.info(`publish package root: ${meta.pkgRoot}`);
@@ -30,15 +31,19 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
   }
 
   const restorePkgJson = _3preparePackage(meta, options);
+  const removeLicense = _4copyFile(/^license$/i, 'LICENSE', meta);
+  const removeReadme = _4copyFile(/^readme\.md$/i, 'README.md', meta);
 
   try {
-    _4publishPackage(meta, options);
+    _5publishPackage(meta, options);
   } finally {
     restorePkgJson();
     restoreNpmrc();
+    removeLicense?.();
+    removeReadme?.();
   }
 
-  await _5syncPackage(meta, options);
+  await _6syncPackage(meta, options);
 }
 
 function _1rewriteNpmrc(meta: InternalPublishMeta, options: InternalPublishOptions) {
@@ -139,7 +144,34 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
   return restore;
 }
 
-function _4publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
+function __findFile(pattern: RegExp, root: string) {
+  const files = glob.sync('*', { cwd: root, onlyFiles: true });
+
+  const fileName = files.find((fileName) => pattern.test(fileName));
+  if (!fileName) return;
+
+  const file = path.join(root, fileName);
+  if (!fs.existsSync(file)) return;
+
+  return file;
+}
+
+function _4copyFile(pattern: RegExp, fileName: string, meta: InternalPublishMeta) {
+  const sourceFile = __findFile(pattern, meta.prjRoot);
+  if (!sourceFile) return;
+
+  const targetFile = __findFile(pattern, meta.pkgRoot);
+  if (targetFile) return;
+
+  const destFile = path.join(meta.pkgRoot, fileName);
+  fs.copyFileSync(sourceFile, destFile);
+
+  return () => {
+    fs.unlinkSync(destFile);
+  };
+}
+
+function _5publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
   core.info('publishing package');
   const command = [
     //
@@ -158,7 +190,7 @@ function _4publishPackage(meta: InternalPublishMeta, options: InternalPublishOpt
   runCommand(command, { cwd: meta.pkgRoot });
 }
 
-async function _5syncPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
+async function _6syncPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
   if (options.disableSync) return;
 
   core.info(`syncing package`);

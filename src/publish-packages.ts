@@ -22,12 +22,12 @@ export async function publishPackages(options: InternalPublishOptions) {
   core.info(`repo owner: ${context.repo.owner}`);
   core.info(`repo name: ${context.repo.repo}`);
 
-  const cwd = process.cwd();
-  const rootPkgFile = path.join(cwd, 'package.json');
+  const prjRoot = process.cwd();
+  const rootPkgFile = path.join(prjRoot, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(rootPkgFile, 'utf-8')) as PKG;
   const childPkgPaths = glob.sync(
     (pkg.workspaces || []).map((ws) => path.join(ws, 'package.json')),
-    { cwd, onlyFiles: true },
+    { cwd: prjRoot, onlyFiles: true },
   );
 
   const pkgPaths = ['package.json', ...childPkgPaths];
@@ -49,7 +49,7 @@ export async function publishPackages(options: InternalPublishOptions) {
   for (const pkgPath of pkgPaths) {
     core.info(`[${order++}/${length}] read package ${pkgPath}`);
 
-    const pkgFile = path.join(cwd, pkgPath);
+    const pkgFile = path.join(prjRoot, pkgPath);
     const pkgString = fs.readFileSync(pkgFile, 'utf-8');
     const pkgObject = JSON.parse(pkgString) as PKG;
 
@@ -70,6 +70,7 @@ export async function publishPackages(options: InternalPublishOptions) {
     await publishPackage(
       {
         ...pkgInfo,
+        prjRoot,
         pkgsByName,
         repoOwner,
         repoType,
