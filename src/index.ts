@@ -13,7 +13,8 @@ async function main() {
         target: core.getInput('target') as PublishOptions['target'],
         includePrivate: core.getInput('includePrivate') === 'true',
         disableProvenance: core.getInput('disableProvenance') === 'true',
-        syncNpmmirror: core.getInput('syncNpmmirror') === 'true',
+        disableSync: core.getInput('disableSync') === 'true',
+        disableStrip: core.getInput('disableStrip') === 'true',
         syncTimeout: Number(core.getInput('syncTimeout')),
     };
     const defaults: InternalPublishOptions = {
@@ -23,7 +24,8 @@ async function main() {
         tag: 'latest',
         token: '',
         disableProvenance: false,
-        syncNpmmirror: false,
+        disableSync: false,
+        disableStrip: false,
         syncTimeout: 30,
     };
     const options = {} as InternalPublishOptions;

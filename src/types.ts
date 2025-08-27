@@ -7,16 +7,19 @@ export type PublishOptions = {
     dryRun: boolean;
     includePrivate: boolean;
     disableProvenance: boolean;
-    syncNpmmirror: boolean;
+    disableSync: boolean;
+    disableStrip: boolean;
     syncTimeout: number;
 };
 
 export type InternalPublishOptions = Required<PublishOptions>;
 
-export type InternalPublishPkg = {
+export type InternalPublishMeta = {
     name: string;
     version: string;
     cwd: string;
+    pkgFile: string;
+    repoOwner: string;
 };
 
 export type PKG = {
@@ -24,4 +27,9 @@ export type PKG = {
     version: string;
     private?: boolean;
     workspaces?: string[];
+    publishConfig?: {
+        access?: 'public' | 'restricted';
+        registry?: string;
+    };
+    scripts?: Record<string, string>;
 };
