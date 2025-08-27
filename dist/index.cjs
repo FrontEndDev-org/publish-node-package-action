@@ -27615,7 +27615,7 @@ function _3preparePackage(meta, options) {
     core.info(`package is private, skip publish`);
     return;
   }
-  const scriptCode = `
+  const prePackCode = `
 const fs = require('fs');
 const path = require('path');
 const pkgFile = '${meta.pkgFile}';
@@ -27626,13 +27626,11 @@ const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
 });
 fs.writeFileSync(pkgFile, JSON.stringify(pkg));
     `;
-  const prePackJS = require$$0$9.join(meta.cwd, `prepack-${Date.now()}.js`);
-  fs$9.writeFileSync(prePackJS, scriptCode);
+  const prePackJS = require$$0$9.join(require$$0.tmpdir(), `prepack-${Date.now()}.js`);
+  fs$9.writeFileSync(prePackJS, prePackCode);
   const restore = () => {
     core.info("restore package.json");
     fs$9.writeFileSync(meta.pkgFile, origin);
-    core.info("remove prepack script");
-    fs$9.unlinkSync(prePackJS);
   };
   pkg.publishConfig = {
     ...pkg.publishConfig,
@@ -27642,7 +27640,7 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg));
     const oldPrePackJS = pkg.scripts?.prepack || "";
     pkg.scripts = {
       ...pkg.scripts,
-      prepack: [oldPrePackJS, prePackJS].filter(Boolean).join(" && ")
+      prepack: [oldPrePackJS, `node ${prePackJS}`].filter(Boolean).join(" && ")
     };
   }
   if (options.target === "github") {
