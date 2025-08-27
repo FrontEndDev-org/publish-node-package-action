@@ -4,80 +4,55 @@
 [![marketplace](https://img.shields.io/badge/marketplace-publish--node--package--action-blueviolet)](https://github.com/marketplace/actions/publish-node-package-action)
 ![license](https://img.shields.io/github/license/FrontEndDev-org/publish-node-package-action)
 
-Publish a NodeJS package to NPM Repository or GitHub Packages
+将 NodeJS 软件包发布到存储库
 
-# Publish to NPM Repository
+# 特性
 
-PreRequirements
+- 发布到 NPM 仓库，比 npm publish 更好用
+- 支持任意工程类型，如 MonoRepo、PolyRepo、SingleRepo
+- 支持任务包管理工具，如 npm、pnpm、yarn
+- 支持同步新版本到 npmmirror.com
+- 支持自动从根目录复制 License 到当前 package，如果当前没有的话
+- 支持自动从根目录复制 README.md 到当前 package，如果当前没有的话
+- 自动修剪 package.json 文件，删除多余的属性，如 `devDependencies`、`scripts` 等
 
--   Make sure you've stored a NPM **Classic Token** (an "Automation" token) as a secret in your repository. You can generate one at <https://www.npmjs.com/settings/your-username/tokens>.
--   If you want to publish scope package, You need to apply to create an organization on npmjs.com，at <https://www.npmjs.com/org/create>.
--   Support for [npm package provenance statements](https://docs.npmjs.com/generating-provenance-statements)
+# 发版到 NPM 仓库
 
-```yaml
-jobs:
-    publish-npm:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            id-token: write # Give permission to mint an ID-token
-        steps:
-            - uses: actions/checkout@v4
-            - run: npm ci
-            - run: npm run build
-            - uses: FrontEndDev-org/publish-node-package-action@v2
-              with:
-                  target: npm
-                  token: ${{ secrets.NPM_TOKEN }}
-```
-
-# Publish to GitHub Packages
-
-PreRequirements
-
--   Requires GitHub Packages write access
--   No need to publish token
-
-Notes
-
--   GitHub Packages `name` may change after release, in two cases:
-    1. For example, the original name `my-pkg` will be changed to `@owner/my-kg`, where `owner` is the name of the
-       owner name of the current repository
-    2. For example, the original name `@my-scope/my-pkg` will be changed to `@owner/my-scope__my-kg`, where `owner` is the owner name of the current repository
--   The name attribute in package.json in the repository will not be modified
+- 确保您已在仓库中存储了 NPM **Classic Token**（即 "Automation" token）作为密钥。您可以在 <https://www.npmjs.com/settings/your-username/tokens> 生成一个。
+- 如果您想发布作用域包，您需要在 npmjs.com 上申请创建一个组织，地址为 <https://www.npmjs.com/org/create>。
 
 ```yaml
 jobs:
-    publish-github:
-        runs-on: ubuntu-latest
-        permissions:
-            packages: write
-        steps:
-            - uses: actions/checkout@v4
-            - run: npm ci
-            - run: npm run build
-            - uses: FrontEndDev-org/publish-node-package-action@v2
-              with:
-                  target: github
-                  token: ${{ github.token }}
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run build
+      - uses: FrontEndDev-org/publish-node-package-action@v2
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
 ```
 
-# Inputs
+# 入参
 
-| Name                 | Required | Default  | Description                                                   |
-| -------------------- | -------- | -------- | ------------------------------------------------------------- |
-| `token`              | true     | None     | Target authorization token                                    |
-| `target`             | false    | `npm`    | Packages target, optionally `npm` OR `github`                 |
-| `tag`                | false    | `latest` | The version label to release, default is latest               |
-| `dryRun`             | false    | `false`  | Pretend to publish, but don't actually upload to the registry |
-| `includePrivate`     | false    | `false`  | publish private packages as well                              |
-| `disableProvenance`  | false    | `false`  | Disable provenance for npm publish                            |
-| `disableSync`        | false    | `false`  | Disable sync to npmmirror.com                                 |
-| `disableStrip`       | false    | `false`  | Disable strip package unneeded keys                           |
-| `disableCopyLicense` | false    | `false`  | Disable copy root license file, if package has no license     |
-| `disableCopyReadme`  | false    | `false`  | Disable copy root readme file, if package has no readme       |
-| `syncTimeout`        | false    | `30`     | Sync timeout in seconds, default is 30s                       |
+| 名称                 | 必填 | 默认值                       | 描述                                            |
+| -------------------- | ---- | ---------------------------- | ----------------------------------------------- |
+| `token`              | 是   | 无                           | 授权令牌                                        |
+| `registry`           | 否   | `https://registry.npmjs.org` | 包源地址                                        |
+| `tag`                | 否   | `latest`                     | 要发布的版本标签，默认为 latest                 |
+| `dryRun`             | 否   | `false`                      | 模拟发布，但不实际上传到注册表                  |
+| `includePrivate`     | 否   | `false`                      | 同时发布私有包                                  |
+| `disableProvenance`  | 否   | `false`                      | 禁用 npm 发布的来源证明                         |
+| `disableSync`        | 否   | `false`                      | 禁用同步到 npmmirror.com                        |
+| `disableStrip`       | 否   | `false`                      | 禁用删除包中不需要的键，如 `scripts`、`devDependencies` 等                          |
+| `disableCopyLicense` | 否   | `false`                      | 禁用复制根目录许可证文件（如果包没有的情况）    |
+| `disableCopyReadme`  | 否   | `false`                      | 禁用复制根目录 README 文件（如果包没有的情况） |
+| `syncTimeout`        | 否   | `30`                         | 同步超时时间（秒），默认为 30 秒                |
 
-# Outputs
+# 出错
 
-Nothing!
+无

@@ -1,49 +1,49 @@
-name: publish node package action
+name: 将 NodeJS 软件包发布到存储库
 author: 云淡然 <hi@ydr.me> (https://ydr.me)
-description: Publish a NodeJS package to NPM Repository or GitHub Packages
+description: 将 NodeJS 软件包发布到存储库
 
 inputs:
   token:
-    description: Target authorization token
+    description: 授权令牌
     required: true
-  target:
-    description: Packages target, optionally npm OR github
+  registry:
+    description: 包源地址
     required: false
-    default: npm
+    default: "https://registry.npmjs.org"
   tag:
-    description: The version tag to release, the default is latest
+    description: 要发布的版本标签，默认为 latest
     required: false
     default: latest
   dryRun:
-    description: Pretend to publish, but don't actually upload to the registry
+    description: 模拟发布，但不实际上传到注册表
     required: false
     default: "false"
   includePrivate:
-    description: publish private packages as well
+    description: 同时发布私有包
     required: false
     default: "false"
   disableProvenance:
-    description: Disable provenance for npm publish
+    description: 禁用 npm 发布的来源证明
     required: false
     default: "false"
   disableSync:
-    description: Disable sync to https://npmmirror.com
+    description: 禁用同步到 npmmirror.com
     required: false
     default: "false"
   disableStrip:
-    description: Disable strip package unneeded keys
+    description: 禁用删除包中不需要的键，如 `scripts`、`devDependencies` 等
     required: false
     default: "false"
   disableCopyLicense:
-    description: Disable copy root license file, if package has no license
+    description: 禁用复制根目录许可证文件（如果包没有的情况）
     required: false
     default: "false"
   disableCopyReadme:
-    description: Disable copy root readme file, if package has no readme
+    description: 禁用复制根目录 README 文件（如果包没有的情况）
     required: false
     default: "false"
   syncTimeout:
-    description: Sync timeout in seconds, default is 30s
+    description: 同步超时时间（秒），默认为 30 秒
     required: false
     default: "30"
 
@@ -55,46 +55,3 @@ branding:
 runs:
   using: node20
   main: dist/index.cjs
-
-# runs:
-#   using: composite
-#   steps:
-#     - name: Make a backup of the original .npmrc file
-#       shell: bash
-#       run: cp .npmrc .npmrc-orgin 2> /dev/null || true
-
-#     - name: Publish target is NPM Repository
-#       if: inputs.target == 'npm'
-#       shell: bash
-#       run: |
-#         echo "//registry.npmjs.org/:_authToken=${{ inputs.token }}" > .npmrc
-#         echo "registry=https://registry.npmjs.org/" >> .npmrc
-#         echo "provenance=true" >> .npmrc
-
-#     - name: Publish target is GitHub Packages
-#       if: inputs.target == 'github'
-#       shell: bash
-#       run: |
-#         echo "//npm.pkg.github.com/:_authToken=${{ github.token }}" > .npmrc
-#         echo "registry=https://npm.pkg.github.com/" >> .npmrc
-
-#     - name: Modify the package.json name to meet GitHub's naming requirements
-#       if: inputs.target == 'github'
-#       uses: actions/github-script@v7
-#       with:
-#         result-encoding: string
-#         script: |
-#           // https://github.com/actions/github-script/issues/322#issuecomment-1379056593
-#           const run = require('${{github.action_path}}/dist/index.cjs');
-#           await run(process.cwd(), context);
-
-#     - name: Publish
-#       shell: bash
-#       run: npm publish --tag ${{ inputs.tag }} ${{ inputs.workspaces && '-ws' || '' }} ${{ inputs.options }}
-
-#     - name: Restore the original .npmrc file
-#       if: always()
-#       shell: bash
-#       run: |
-#         rm -rf .npmrc
-#         mv .npmrc-origin .npmrc 2> /dev/null || true
