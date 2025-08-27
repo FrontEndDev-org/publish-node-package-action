@@ -11,10 +11,16 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
     core.info(`publish package root: ${meta.pkgRoot}`);
     core.info(`publish package name: ${meta.name}`);
     core.info(`publish package version: ${meta.version}`);
+    core.info(`publish package private: ${!!meta.pkgObject.private}`);
     core.info(`publish package tag: ${options.tag}`);
     core.info(`publish package target: ${options.target}`);
     core.info(`publish package sync: ${!options.disableSync}`);
     core.info(`publish package strip: ${!options.disableStrip}`);
+
+    if (meta.pkgObject.private && !options.includePrivate) {
+        core.info(`package is private, skip publish`);
+        return;
+    }
 
     const restoreNpmrc = _1rewriteNpmrc(meta, options);
     const isExist = _2checkPackageExist(meta);
@@ -26,12 +32,6 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
     }
 
     const restorePkgJson = _3preparePackage(meta, options);
-
-    // 没有准备 package（通常是私有包）则不用再发布
-    if (!restorePkgJson) {
-        restoreNpmrc();
-        return;
-    }
 
     try {
         _4publishPackage(meta, options);
@@ -85,11 +85,6 @@ function _2checkPackageExist(meta: InternalPublishMeta) {
 }
 
 function _3preparePackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
-    if (meta.pkgObject.private && !options.includePrivate) {
-        core.info(`package is private, skip publish`);
-        return;
-    }
-
     const prePackCode = `
 const fs = require('fs');
 const path = require('path');
