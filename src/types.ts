@@ -21,8 +21,6 @@ export type InternalPublishMeta = {
   pkgObject: PKG;
   pkgString: string;
   pkgsByName: Record<string, PKG>;
-  repoOwner: string;
-  repoType: 'Organization' | 'User';
 };
 
 export type PKG = {

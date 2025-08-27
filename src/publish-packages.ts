@@ -1,5 +1,4 @@
 import core from '@actions/core';
-import github from '@actions/github';
 import glob from 'fast-glob';
 import fs from 'fs';
 import path from 'path';
@@ -7,21 +6,6 @@ import type { InternalPublishMeta, InternalPublishOptions, PKG } from './types';
 import { publishPackage } from './publish-package';
 
 export async function publishPackages(options: InternalPublishOptions) {
-  const context = github.context;
-  // @ref https://github.com/actions/toolkit/blob/457303960f03375db6f033e214b9f90d79c3fe5c/packages/github/src/context.ts
-  const repoOwner = context.repo.owner;
-
-  const octokit = github.getOctokit(options.token);
-  const { data: repoInfo } = await octokit.rest.repos.get({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-  });
-  const repoType = repoInfo.owner.type as InternalPublishMeta['repoType'];
-
-  core.info(`repo type: ${repoType}`);
-  core.info(`repo owner: ${context.repo.owner}`);
-  core.info(`repo name: ${context.repo.repo}`);
-
   const prjRoot = process.cwd();
   const rootPkgFile = path.join(prjRoot, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(rootPkgFile, 'utf-8')) as PKG;
@@ -72,8 +56,6 @@ export async function publishPackages(options: InternalPublishOptions) {
         ...pkgInfo,
         prjRoot,
         pkgsByName,
-        repoOwner,
-        repoType,
       },
       options,
     );
