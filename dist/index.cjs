@@ -27546,7 +27546,7 @@ async function syncPackage(name, options) {
   }
 }
 async function publishPackage(meta, options) {
-  core.info(`publish package cwd: ${meta.cwd}`);
+  core.info(`publish package root: ${meta.pkgRoot}`);
   core.info(`publish package name: ${meta.name}`);
   core.info(`publish package version: ${meta.version}`);
   core.info(`publish package tag: ${options.tag}`);
@@ -27601,7 +27601,7 @@ function _2checkPackageExist(meta) {
   core.info(`checking package`);
   try {
     const options = core.isDebug() ? "--verbose" : "";
-    runCommand(`npm view ${meta.name}@${meta.version} ${options}`, { cwd: meta.cwd, stdio: "ignore" });
+    runCommand(`npm view ${meta.name}@${meta.version} ${options}`, { cwd: meta.pkgRoot, stdio: "ignore" });
     core.info(`${meta.name}@${meta.version} is exists, skip publish`);
     return true;
   } catch (err) {
@@ -27609,9 +27609,7 @@ function _2checkPackageExist(meta) {
   }
 }
 function _3preparePackage(meta, options) {
-  const origin = fs$9.readFileSync(meta.pkgFile, "utf-8");
-  const pkg = JSON.parse(origin);
-  if (pkg.private && !options.includePrivate) {
+  if (meta.pkgObject.private && !options.includePrivate) {
     core.info(`package is private, skip publish`);
     return;
   }
@@ -27630,29 +27628,42 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg));
   fs$9.writeFileSync(prePackJS, prePackCode);
   const restore = () => {
     core.info("restore package.json");
-    fs$9.writeFileSync(meta.pkgFile, origin);
+    fs$9.writeFileSync(meta.pkgFile, meta.pkgString);
   };
-  pkg.publishConfig = {
-    ...pkg.publishConfig,
+  meta.pkgObject.publishConfig = {
+    ...meta.pkgObject.publishConfig,
     access: "public"
   };
   if (!options.disableStrip) {
-    const oldPrePackJS = pkg.scripts?.prepack || "";
-    pkg.scripts = {
-      ...pkg.scripts,
+    const oldPrePackJS = meta.pkgObject.scripts?.prepack || "";
+    meta.pkgObject.scripts = {
+      ...meta.pkgObject.scripts,
       prepack: [oldPrePackJS, `node ${prePackJS}`].filter(Boolean).join(" && ")
     };
   }
+  const workspaceProtocol = "workspace:";
+  const dependencies = meta.pkgObject.dependencies || {};
+  for (const [depName, depVer] of Object.entries(dependencies)) {
+    if (depVer.startsWith(workspaceProtocol)) {
+      const realVer = meta.pkgsByName[depName].version || "*";
+      const workspaceVer = depVer.slice(workspaceProtocol.length).trim();
+      if (workspaceVer === "*") {
+        dependencies[depName] = realVer;
+      } else if (workspaceVer.length === 1) {
+        dependencies[depName] = workspaceVer + realVer;
+      }
+    }
+  }
   if (options.target === "github") {
-    const scopeMatches = pkg.name.match(/@(.*)\/(.*)/);
+    const scopeMatches = meta.pkgObject.name.match(/@(.*)\/(.*)/);
     const scope = scopeMatches ? scopeMatches[1] : "";
-    const name = scopeMatches ? scopeMatches[2] : pkg.name;
+    const name = scopeMatches ? scopeMatches[2] : meta.pkgObject.name;
     const underlineName = scope && scope !== meta.repoOwner ? `${scope}__${name}` : name;
     const ownerName = `@${meta.repoOwner}/${underlineName}`;
-    core.info(`rewrite package name: ${pkg.name} -> ${ownerName}`);
-    pkg.name = ownerName;
+    core.info(`rewrite package name: ${meta.pkgObject.name} -> ${ownerName}`);
+    meta.pkgObject.name = ownerName;
   }
-  fs$9.writeFileSync(meta.pkgFile, JSON.stringify(pkg), "utf-8");
+  fs$9.writeFileSync(meta.pkgFile, JSON.stringify(meta.pkgObject), "utf-8");
   return restore;
 }
 function _4publishPackage(meta, options) {
@@ -27666,9 +27677,9 @@ function _4publishPackage(meta, options) {
     options.dryRun && "--dry-run",
     core.isDebug() && "--verbose"
   ].filter(Boolean).join(" ");
-  runCommand("node --version", { cwd: meta.cwd });
-  runCommand("npm --version", { cwd: meta.cwd });
-  runCommand(command2, { cwd: meta.cwd });
+  runCommand("node --version", { cwd: meta.pkgRoot });
+  runCommand("npm --version", { cwd: meta.pkgRoot });
+  runCommand(command2, { cwd: meta.pkgRoot });
 }
 async function _5syncPackage(meta, options) {
   if (options.target !== "npm") return;
@@ -27695,14 +27706,30 @@ async function publishPackages(options) {
   const pkgPaths = ["package.json", ...childPkgPaths];
   core.info(`pkgPaths: ${JSON.stringify(pkgPaths)}`);
   const length = pkgPaths.length;
+  const pkgsByPath = {};
+  const pkgsByName = {};
   let order = 1;
   for (const pkgPath of pkgPaths) {
-    core.info(`[${order++}/${length}] reading package ${pkgPath}`);
+    core.info(`[${order++}/${length}] read package ${pkgPath}`);
     const pkgFile = require$$0$9.join(cwd, pkgPath);
+    const pkgString = fs$9.readFileSync(pkgFile, "utf-8");
+    const pkgObject = JSON.parse(pkgString);
+    pkgsByPath[pkgPath] = {
+      pkgRoot: require$$0$9.dirname(pkgFile),
+      pkgFile,
+      pkgString,
+      pkgObject
+    };
+    pkgsByName[pkgObject.name] = pkgObject;
+  }
+  order = 1;
+  for (const pkgPath of pkgPaths) {
+    core.info(`[${order++}/${length}] publish package ${pkgPath}`);
+    const pkgInfo = pkgsByPath[pkgPath];
     await publishPackage(
       {
-        pkgFile,
-        cwd: require$$0$9.dirname(pkgFile),
+        ...pkgInfo,
+        pkgsByName,
         name: pkg.name,
         version: pkg.version,
         repoOwner
