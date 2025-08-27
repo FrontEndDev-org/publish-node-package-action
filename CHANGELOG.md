@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.1.0...v5.2.0) (2025-08-27)
+
+
+### Features
+
+* **publish:** 移除未使用的 GitHub 相关代码 ([186e5d4](https://github.com/FrontEndDev-org/publish-node-package-action/commit/186e5d41369b3db4f18c3c9b05317f0fa4ca99bb))
+
 ## [5.1.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.0.0...v5.1.0) (2025-08-27)
 
 
