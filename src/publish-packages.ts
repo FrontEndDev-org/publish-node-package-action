@@ -3,24 +3,13 @@ import github from '@actions/github';
 import glob from 'fast-glob';
 import fs from 'fs';
 import path from 'path';
-import type { InternalPublishOptions, PublishTarget } from './types';
+import type { InternalPublishOptions, PKG } from './types';
 import { publishPackage } from './publish-package';
 import { syncPackage } from './sync-package';
-
-type PKG = {
-    name: string;
-    version: string;
-    private?: boolean;
-    workspaces?: string[];
-};
-
-const registries: Record<PublishTarget, string> = {
-    npm: 'https://registry.npmjs.org',
-    github: 'https://npm.pkg.github.com',
-};
+import { registryRecord } from './const';
 
 export async function publishPackages(options: InternalPublishOptions) {
-    const registry = registries[options.target];
+    const registry = registryRecord[options.target];
 
     if (!registry) {
         throw new Error(`Invalid registry target: ${options.target}`);
@@ -75,7 +64,14 @@ export async function publishPackages(options: InternalPublishOptions) {
 
         try {
             core.info(`publish package: ${pkgPath} ${pkg.name}@${pkg.version} as ${options.tag} to ${options.target}`);
-            publishPackage(pkgPath, options);
+            publishPackage(
+                {
+                    cwd: path.dirname(pkgFile),
+                    name: pkg.name,
+                    version: pkg.version,
+                },
+                options,
+            );
 
             if (options.target === 'npm' && options.syncNpmmirror) {
                 core.info(`sync package: ${pkgPath} ${pkg.name}@${pkg.version} to npmmirror.com`);

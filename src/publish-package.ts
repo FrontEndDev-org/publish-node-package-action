@@ -1,24 +1,21 @@
-import cp from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import type { InternalPublishOptions, PublishTarget } from './types';
+import type { InternalPublishPkg, InternalPublishOptions, PublishTarget } from './types';
 import core from '@actions/core';
+import { registryRecord } from './const';
+import { runCommand } from './utils';
 
-const registries: Record<PublishTarget, string> = {
-    npm: 'https://registry.npmjs.org',
-    github: 'https://npm.pkg.github.com',
-};
+export function checkPackageExist(pkg: InternalPublishPkg) {
+    try {
+        const options = core.isDebug() ? '--verbose' : '';
+        runCommand(`npm view ${pkg.name}@${pkg.version} ${options}`, pkg.cwd);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
 
-export function publishPackage(pkgPath: string, options: InternalPublishOptions) {
-    const cwd = path.resolve(pkgPath, '..');
-    const exec = (command: string) => {
-        core.info(`> ${command}`);
-        cp.execSync(command, {
-            cwd,
-            stdio: 'inherit',
-            env: process.env,
-        });
-    };
+export function publishPackage(pkg: InternalPublishPkg, options: InternalPublishOptions) {
     // monorepo 下的所有 package 都参考根目录的 npmrc
     const npmrcFile = path.resolve('.npmrc');
     const backupFile = npmrcFile + '-' + Date.now();
@@ -32,7 +29,7 @@ export function publishPackage(pkgPath: string, options: InternalPublishOptions)
         core.info('not found .npmrc');
     }
 
-    const registry = registries[options.target];
+    const registry = registryRecord[options.target];
     const authURL = new URL(registry);
 
     core.info(`append .npmrc authToken(${options.token.length})`);
@@ -41,28 +38,48 @@ export function publishPackage(pkgPath: string, options: InternalPublishOptions)
     core.info('append .npmrc registry');
     fs.appendFileSync(npmrcFile, `registry=${registry}\n`, 'utf-8');
 
-    core.info('publishing package');
-    const command = [
-        //
-        'npm',
-        'publish',
-        options.target === 'npm' && !options.disableProvenance && '--provenance',
-        `--tag=${options.tag}`,
-        options.dryRun && '--dry-run',
-        core.isDebug() && '--verbose',
-    ]
-        .filter(Boolean)
-        .join(' ');
-
-    try {
-        exec('node --version');
-        exec('npm --version');
-        exec(command);
-    } finally {
+    const cleanup = () => {
         if (exists) {
             fs.renameSync(backupFile, npmrcFile);
         } else {
             fs.unlinkSync(npmrcFile);
         }
-    }
+    };
+
+    const check = () => {
+        core.info(`checking package is exist`);
+        const isExist = checkPackageExist(pkg);
+
+        if (isExist) {
+            core.info(`package is exists, skip publish`);
+            cleanup();
+            return true;
+        }
+    };
+
+    const publish = () => {
+        core.info('publishing package');
+        const command = [
+            //
+            'npm',
+            'publish',
+            options.target === 'npm' && !options.disableProvenance && '--provenance',
+            `--tag=${options.tag}`,
+            options.dryRun && '--dry-run',
+            core.isDebug() && '--verbose',
+        ]
+            .filter(Boolean)
+            .join(' ');
+
+        try {
+            runCommand('node --version', pkg.cwd);
+            runCommand('npm --version', pkg.cwd);
+            runCommand(command, pkg.cwd);
+        } finally {
+            cleanup();
+        }
+    };
+
+    if (check()) return;
+    publish();
 }

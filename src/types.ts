@@ -12,3 +12,16 @@ export type PublishOptions = {
 };
 
 export type InternalPublishOptions = Required<PublishOptions>;
+
+export type InternalPublishPkg = {
+    name: string;
+    version: string;
+    cwd: string;
+};
+
+export type PKG = {
+    name: string;
+    version: string;
+    private?: boolean;
+    workspaces?: string[];
+};
