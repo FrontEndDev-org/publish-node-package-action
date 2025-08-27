@@ -72,7 +72,8 @@ jobs:
 | `dryRun`            | false    | `false`  | Pretend to publish, but don't actually upload to the registry. |
 | `includePrivate`    | false    | `false`  | publish private packages as well.                              |
 | `disableProvenance` | false    | `false`  | Disable provenance for npm publish.                            |
-| `syncNpmmirror`     | false    | `false`  | Sync to npmmirror.com.                                         |
+| `disableSync`       | false    | `false`  | Disable sync to npmmirror.com.                                 |
+| `disableStrip`      | false    | `false`  | Disable strip package unneeded keys.                           |
 | `syncTimeout`       | false    | `30`     | Sync timeout in seconds, default is 30s.                       |
 
 # Outputs
