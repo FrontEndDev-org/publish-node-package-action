@@ -27488,73 +27488,6 @@ function runCommand(command2, cwd = process.cwd()) {
     env: process.env
   });
 }
-function checkPackageExist(pkg) {
-  try {
-    const options = core.isDebug() ? "--verbose" : "";
-    runCommand(`npm view ${pkg.name}@${pkg.version} ${options}`, pkg.cwd);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
-function publishPackage(pkg, options) {
-  const npmrcFile = require$$0$9.resolve(".npmrc");
-  const backupFile = npmrcFile + "-" + Date.now();
-  const exists = fs$9.existsSync(npmrcFile);
-  if (exists) {
-    core.info("found .npmrc");
-    core.info("backup .npmrc " + require$$0$9.relative(process.cwd(), backupFile));
-    fs$9.copyFileSync(npmrcFile, backupFile);
-  } else {
-    core.info("not found .npmrc");
-  }
-  const registry = registryRecord[options.target];
-  const authURL = new URL(registry);
-  core.info(`append .npmrc authToken(${options.token.length})`);
-  fs$9.appendFileSync(npmrcFile, `
-//${authURL.host}/:_authToken=${options.token}
-`, "utf-8");
-  core.info("append .npmrc registry");
-  fs$9.appendFileSync(npmrcFile, `registry=${registry}
-`, "utf-8");
-  const cleanup = () => {
-    if (exists) {
-      fs$9.renameSync(backupFile, npmrcFile);
-    } else {
-      fs$9.unlinkSync(npmrcFile);
-    }
-  };
-  const check2 = () => {
-    core.info(`checking package is exist`);
-    const isExist = checkPackageExist(pkg);
-    if (isExist) {
-      core.info(`package is exists, skip publish`);
-      cleanup();
-      return true;
-    }
-  };
-  const publish = () => {
-    core.info("publishing package");
-    const command2 = [
-      //
-      "npm",
-      "publish",
-      options.target === "npm" && !options.disableProvenance && "--provenance",
-      `--tag=${options.tag}`,
-      options.dryRun && "--dry-run",
-      core.isDebug() && "--verbose"
-    ].filter(Boolean).join(" ");
-    try {
-      runCommand("node --version", pkg.cwd);
-      runCommand("npm --version", pkg.cwd);
-      runCommand(command2, pkg.cwd);
-    } finally {
-      cleanup();
-    }
-  };
-  if (check2()) return;
-  publish();
-}
 async function sync(name) {
   const syncURL = `https://registry-direct.npmmirror.com/${name}/sync?sync_upstream=true`;
   try {
@@ -27611,6 +27544,82 @@ async function syncPackage(name, options) {
     await new Promise((resolve) => setTimeout(resolve, 1e3));
   }
 }
+function checkPackageExist(pkg) {
+  try {
+    const options = core.isDebug() ? "--verbose" : "";
+    runCommand(`npm view ${pkg.name}@${pkg.version} ${options}`, pkg.cwd);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+async function publishPackage(pkg, options) {
+  core.info(`publish package cwd: ${pkg.cwd}`);
+  core.info(`publish package name: ${pkg.name}`);
+  core.info(`publish package version: ${pkg.version}`);
+  core.info(`publish package tag: ${options.tag}`);
+  core.info(`publish package target: ${options.target}`);
+  const npmrcFile = require$$0$9.resolve(".npmrc");
+  const backupFile = npmrcFile + "-" + Date.now();
+  const exists = fs$9.existsSync(npmrcFile);
+  if (exists) {
+    core.info("found .npmrc");
+    core.info("backup .npmrc " + require$$0$9.relative(process.cwd(), backupFile));
+    fs$9.copyFileSync(npmrcFile, backupFile);
+  } else {
+    core.info("not found .npmrc");
+  }
+  const registry = registryRecord[options.target];
+  const authURL = new URL(registry);
+  core.info(`append .npmrc authToken(${options.token.length})`);
+  fs$9.appendFileSync(npmrcFile, `
+//${authURL.host}/:_authToken=${options.token}
+`, "utf-8");
+  core.info("append .npmrc registry");
+  fs$9.appendFileSync(npmrcFile, `registry=${registry}
+`, "utf-8");
+  const cleanup = () => {
+    if (exists) {
+      fs$9.renameSync(backupFile, npmrcFile);
+    } else {
+      fs$9.unlinkSync(npmrcFile);
+    }
+  };
+  const check2 = () => {
+    core.info(`checking package`);
+    const isExist = checkPackageExist(pkg);
+    if (isExist) {
+      core.info(`${pkg.name}@${pkg.version} is exists, skip publish`);
+      cleanup();
+      return true;
+    }
+  };
+  const publish = () => {
+    core.info("publishing package");
+    const command2 = [
+      //
+      "npm",
+      "publish",
+      options.target === "npm" && !options.disableProvenance && "--provenance",
+      `--tag=${options.tag}`,
+      options.dryRun && "--dry-run",
+      core.isDebug() && "--verbose"
+    ].filter(Boolean).join(" ");
+    try {
+      runCommand("node --version", pkg.cwd);
+      runCommand("npm --version", pkg.cwd);
+      runCommand(command2, pkg.cwd);
+    } finally {
+      cleanup();
+    }
+  };
+  if (check2()) return;
+  publish();
+  if (options.target === "npm" && options.syncNpmmirror) {
+    core.info(`syncing package`);
+    await syncPackage(pkg.name, options);
+  }
+}
 async function publishPackages(options) {
   const registry = registryRecord[options.target];
   if (!registry) {
@@ -27651,7 +27660,6 @@ async function publishPackages(options) {
       fs$9.writeFileSync(pkgFile, JSON.stringify(pkg2), "utf-8");
     }
     try {
-      core.info(`publish package: ${pkgPath} ${pkg2.name}@${pkg2.version} as ${options.tag} to ${options.target}`);
       publishPackage(
         {
           cwd: require$$0$9.dirname(pkgFile),
@@ -27660,10 +27668,6 @@ async function publishPackages(options) {
         },
         options
       );
-      if (options.target === "npm" && options.syncNpmmirror) {
-        core.info(`sync package: ${pkgPath} ${pkg2.name}@${pkg2.version} to npmmirror.com`);
-        await syncPackage(pkg2.name, options);
-      }
     } finally {
       if (options.target === "github") {
         fs$9.writeFileSync(pkgPath, origin, "utf-8");
