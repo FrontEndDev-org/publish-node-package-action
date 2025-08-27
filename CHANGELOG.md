@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.0.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v4.2.0...v5.0.0) (2025-08-27)
+
+
+### Features
+
+* **action:** 添加新功能并优化现有功能 ([e90e25d](https://github.com/FrontEndDev-org/publish-node-package-action/commit/e90e25d26b67c4d8f91039db6d09b795f1cfd215))
+* **publish:** 复制项目根目录下的 LICENSE 和 README.md 到发布包 ([03ebf13](https://github.com/FrontEndDev-org/publish-node-package-action/commit/03ebf132ab185ad94b50a0141b89a26ac88a755a))
+* 优化打包时的 package.json 文件格式 ([0817a9e](https://github.com/FrontEndDev-org/publish-node-package-action/commit/0817a9e62cdd50577318667595f07bfbb6f058f5))
+* 重构发布流程并添加 GitHub Actions 集成 ([0ce9e79](https://github.com/FrontEndDev-org/publish-node-package-action/commit/0ce9e79d0910bb8644d3b78344c31481cd274f01))
+
+
+### Miscellaneous Chores
+
+* release 5.0.0 ([58115bb](https://github.com/FrontEndDev-org/publish-node-package-action/commit/58115bb4ea4436ad8f66ec53bea42b7d99181d05))
+
 ## [4.2.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v4.1.0...v4.2.0) (2025-08-27)
 
 
