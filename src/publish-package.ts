@@ -25,25 +25,22 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
         return;
     }
 
-    const { prePackJS, removePrePackJS } = _3generatePrePackScript(meta, options);
-    const restorePkgJson = _4preparePackage(prePackJS, meta, options);
+    const restorePkgJson = _3preparePackage(meta, options);
 
     // 没有准备 package（通常是私有包）则不用再发布
     if (!restorePkgJson) {
         restoreNpmrc();
-        removePrePackJS();
         return;
     }
 
     try {
-        _5publishPackage(meta, options);
+        _4publishPackage(meta, options);
     } finally {
         restorePkgJson();
         restoreNpmrc();
-        removePrePackJS();
     }
 
-    await _6syncPackage(meta, options);
+    await _5syncPackage(meta, options);
 }
 
 function _1rewriteNpmrc(meta: InternalPublishMeta, options: InternalPublishOptions) {
@@ -87,7 +84,15 @@ function _2checkPackageExist(meta: InternalPublishMeta) {
     }
 }
 
-function _3generatePrePackScript(meta: InternalPublishMeta, options: InternalPublishOptions) {
+function _3preparePackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
+    const origin = fs.readFileSync(meta.pkgFile, 'utf-8');
+    const pkg = JSON.parse(origin) as PKG;
+
+    if (pkg.private && !options.includePrivate) {
+        core.info(`package is private, skip publish`);
+        return;
+    }
+
     const scriptCode = `
 const fs = require('fs');
 const path = require('path');
@@ -101,26 +106,13 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg));
     `;
     const prePackJS = path.join(meta.cwd, `prepack-${Date.now()}.js`);
     fs.writeFileSync(prePackJS, scriptCode);
-    return {
-        prePackJS,
-        removePrePackJS() {
-            fs.unlinkSync(prePackJS);
-        },
-    };
-}
-
-function _4preparePackage(prePackJS: string, meta: InternalPublishMeta, options: InternalPublishOptions) {
-    const origin = fs.readFileSync(meta.pkgFile, 'utf-8');
-    const pkg = JSON.parse(origin) as PKG;
-
-    if (pkg.private && !options.includePrivate) {
-        core.info(`package is private, skip publish`);
-        return;
-    }
 
     const restore = () => {
         core.info('restore package.json');
         fs.writeFileSync(meta.pkgFile, origin);
+
+        core.info('remove prepack script');
+        fs.unlinkSync(prePackJS);
     };
 
     pkg.publishConfig = {
@@ -155,7 +147,7 @@ function _4preparePackage(prePackJS: string, meta: InternalPublishMeta, options:
     return restore;
 }
 
-function _5publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
+function _4publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
     core.info('publishing package');
     const command = [
         //
@@ -174,7 +166,7 @@ function _5publishPackage(meta: InternalPublishMeta, options: InternalPublishOpt
     runCommand(command, { cwd: meta.cwd });
 }
 
-async function _6syncPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
+async function _5syncPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
     if (options.target !== 'npm') return;
     if (options.disableSync) return;
 
