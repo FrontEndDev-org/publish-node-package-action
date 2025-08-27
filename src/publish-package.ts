@@ -19,6 +19,7 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
     const restoreNpmrc = _1rewriteNpmrc(meta, options);
     const isExist = _2checkPackageExist(meta);
 
+    // 包版本存在，则不用再发布
     if (isExist) {
         restoreNpmrc();
         return;
@@ -27,10 +28,16 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
     const prePackJS = _3generatePrePackScript(meta, options);
     const restorePkgJson = _4preparePackage(prePackJS, meta, options);
 
+    // 没有准备 package（通常是私有包）则不用再发布
+    if (!restorePkgJson) {
+        restoreNpmrc();
+        return;
+    }
+
     try {
         _5publishPackage(meta, options);
     } finally {
-        restorePkgJson?.();
+        restorePkgJson();
         restoreNpmrc();
     }
 
@@ -98,15 +105,16 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg));
 function _4preparePackage(prePackJS: string, meta: InternalPublishMeta, options: InternalPublishOptions) {
     const origin = fs.readFileSync(meta.pkgFile, 'utf-8');
     const pkg = JSON.parse(origin) as PKG;
-    const restore = () => {
-        core.info('restore package.json');
-        fs.writeFileSync(meta.pkgFile, origin);
-    };
 
     if (pkg.private && !options.includePrivate) {
         core.info(`package is private, skip publish`);
         return;
     }
+
+    const restore = () => {
+        core.info('restore package.json');
+        fs.writeFileSync(meta.pkgFile, origin);
+    };
 
     pkg.publishConfig = {
         ...pkg.publishConfig,
