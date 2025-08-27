@@ -25,12 +25,13 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
         return;
     }
 
-    const prePackJS = _3generatePrePackScript(meta, options);
+    const { prePackJS, removePrePackJS } = _3generatePrePackScript(meta, options);
     const restorePkgJson = _4preparePackage(prePackJS, meta, options);
 
     // 没有准备 package（通常是私有包）则不用再发布
     if (!restorePkgJson) {
         restoreNpmrc();
+        removePrePackJS();
         return;
     }
 
@@ -39,9 +40,10 @@ export async function publishPackage(meta: InternalPublishMeta, options: Interna
     } finally {
         restorePkgJson();
         restoreNpmrc();
+        removePrePackJS();
     }
 
-    _6syncPackage(meta, options);
+    await _6syncPackage(meta, options);
 }
 
 function _1rewriteNpmrc(meta: InternalPublishMeta, options: InternalPublishOptions) {
@@ -97,9 +99,14 @@ const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
 });
 fs.writeFileSync(pkgFile, JSON.stringify(pkg));
     `;
-    const scriptFile = path.join(os.tmpdir(), `prepack-${Date.now()}.js`);
-    fs.writeFileSync(scriptFile, scriptCode);
-    return scriptFile;
+    const prePackJS = path.join(meta.cwd, `prepack-${Date.now()}.js`);
+    fs.writeFileSync(prePackJS, scriptCode);
+    return {
+        prePackJS,
+        removePrePackJS() {
+            fs.unlinkSync(prePackJS);
+        },
+    };
 }
 
 function _4preparePackage(prePackJS: string, meta: InternalPublishMeta, options: InternalPublishOptions) {
@@ -168,8 +175,9 @@ function _5publishPackage(meta: InternalPublishMeta, options: InternalPublishOpt
 }
 
 async function _6syncPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
-    if (options.target === 'npm' && options.disableSync) {
-        core.info(`syncing package`);
-        await syncPackage(meta.name, options);
-    }
+    if (options.target !== 'npm') return;
+    if (options.disableSync) return;
+
+    core.info(`syncing package`);
+    await syncPackage(meta.name, options);
 }
