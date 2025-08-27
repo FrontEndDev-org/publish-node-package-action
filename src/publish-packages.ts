@@ -63,7 +63,6 @@ export async function publishPackages(options: InternalPublishOptions) {
         }
 
         try {
-            core.info(`publish package: ${pkgPath} ${pkg.name}@${pkg.version} as ${options.tag} to ${options.target}`);
             publishPackage(
                 {
                     cwd: path.dirname(pkgFile),
@@ -72,11 +71,6 @@ export async function publishPackages(options: InternalPublishOptions) {
                 },
                 options,
             );
-
-            if (options.target === 'npm' && options.syncNpmmirror) {
-                core.info(`sync package: ${pkgPath} ${pkg.name}@${pkg.version} to npmmirror.com`);
-                await syncPackage(pkg.name, options);
-            }
         } finally {
             if (options.target === 'github') {
                 fs.writeFileSync(pkgPath, origin, 'utf-8');

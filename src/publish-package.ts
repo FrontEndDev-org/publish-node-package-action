@@ -4,18 +4,16 @@ import type { InternalPublishPkg, InternalPublishOptions, PublishTarget } from '
 import core from '@actions/core';
 import { registryRecord } from './const';
 import { runCommand } from './utils';
+import { syncPackage } from './sync-package';
+import { checkPackageExist } from './check-package';
 
-export function checkPackageExist(pkg: InternalPublishPkg) {
-    try {
-        const options = core.isDebug() ? '--verbose' : '';
-        runCommand(`npm view ${pkg.name}@${pkg.version} ${options}`, pkg.cwd);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
+export async function publishPackage(pkg: InternalPublishPkg, options: InternalPublishOptions) {
+    core.info(`publish package cwd: ${pkg.cwd}`);
+    core.info(`publish package name: ${pkg.name}`);
+    core.info(`publish package version: ${pkg.version}`);
+    core.info(`publish package tag: ${options.tag}`);
+    core.info(`publish package target: ${options.target}`);
 
-export function publishPackage(pkg: InternalPublishPkg, options: InternalPublishOptions) {
     // monorepo 下的所有 package 都参考根目录的 npmrc
     const npmrcFile = path.resolve('.npmrc');
     const backupFile = npmrcFile + '-' + Date.now();
@@ -47,11 +45,11 @@ export function publishPackage(pkg: InternalPublishPkg, options: InternalPublish
     };
 
     const check = () => {
-        core.info(`checking package is exist`);
+        core.info(`checking package`);
         const isExist = checkPackageExist(pkg);
 
         if (isExist) {
-            core.info(`package is exists, skip publish`);
+            core.info(`${pkg.name}@${pkg.version} is exists, skip publish`);
             cleanup();
             return true;
         }
@@ -81,5 +79,11 @@ export function publishPackage(pkg: InternalPublishPkg, options: InternalPublish
     };
 
     if (check()) return;
+
     publish();
+
+    if (options.target === 'npm' && options.syncNpmmirror) {
+        core.info(`syncing package`);
+        await syncPackage(pkg.name, options);
+    }
 }
