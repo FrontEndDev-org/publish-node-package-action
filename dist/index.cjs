@@ -24773,9 +24773,10 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"5.1.0"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.2.0"}`);
   const token = core.getInput("token");
   core.setSecret(token);
+  const defaultRegistry = "https://registry.npmjs.org";
   const inputs = {
     token,
     tag: core.getInput("tag"),
@@ -24786,8 +24787,8 @@ async function main() {
     disableStrip: core.getInput("disableStrip") === "true",
     disableCopyLicense: core.getInput("disableCopyLicense") === "true",
     disableCopyReadme: core.getInput("disableCopyReadme") === "true",
-    syncTimeout: Number(core.getInput("syncTimeout")),
-    registry: core.getInput("repository")
+    syncTimeout: Number(core.getInput("syncTimeout") || "30"),
+    registry: core.getInput("repository") || defaultRegistry
   };
   const defaults = {
     dryRun: false,
@@ -24800,7 +24801,7 @@ async function main() {
     disableCopyLicense: false,
     disableCopyReadme: false,
     syncTimeout: 30,
-    registry: "https://registry.npmjs.org"
+    registry: defaultRegistry
   };
   const options = {};
   for (const [key, defaultVal] of Object.entries(defaults)) {
