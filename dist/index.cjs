@@ -27559,10 +27559,11 @@ async function publishPackage(meta, options) {
     restoreNpmrc();
     return;
   }
-  const prePackJS = _3generatePrePackScript(meta);
+  const { prePackJS, removePrePackJS } = _3generatePrePackScript(meta);
   const restorePkgJson = _4preparePackage(prePackJS, meta, options);
   if (!restorePkgJson) {
     restoreNpmrc();
+    removePrePackJS();
     return;
   }
   try {
@@ -27570,8 +27571,9 @@ async function publishPackage(meta, options) {
   } finally {
     restorePkgJson();
     restoreNpmrc();
+    removePrePackJS();
   }
-  _6syncPackage(meta, options);
+  await _6syncPackage(meta, options);
 }
 function _1rewriteNpmrc(meta, options) {
   core.info(`rewriting .npmrc`);
@@ -27621,9 +27623,14 @@ const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
 });
 fs.writeFileSync(pkgFile, JSON.stringify(pkg));
     `;
-  const scriptFile = require$$0$9.join(require$$0.tmpdir(), `prepack-${Date.now()}.js`);
-  fs$9.writeFileSync(scriptFile, scriptCode);
-  return scriptFile;
+  const prePackJS = require$$0$9.join(meta.cwd, `prepack-${Date.now()}.js`);
+  fs$9.writeFileSync(prePackJS, scriptCode);
+  return {
+    prePackJS,
+    removePrePackJS() {
+      fs$9.unlinkSync(prePackJS);
+    }
+  };
 }
 function _4preparePackage(prePackJS, meta, options) {
   const origin = fs$9.readFileSync(meta.pkgFile, "utf-8");
@@ -27675,10 +27682,10 @@ function _5publishPackage(meta, options) {
   runCommand(command2, { cwd: meta.cwd });
 }
 async function _6syncPackage(meta, options) {
-  if (options.target === "npm" && options.disableSync) {
-    core.info(`syncing package`);
-    await syncPackage(meta.name, options);
-  }
+  if (options.target !== "npm") return;
+  if (options.disableSync) return;
+  core.info(`syncing package`);
+  await syncPackage(meta.name, options);
 }
 async function publishPackages(options) {
   const registry = registryRecord[options.target];
