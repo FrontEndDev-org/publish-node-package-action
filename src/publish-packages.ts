@@ -34,15 +34,43 @@ export async function publishPackages(options: InternalPublishOptions) {
     core.info(`pkgPaths: ${JSON.stringify(pkgPaths)}`);
     const length = pkgPaths.length;
 
+    const pkgsByPath: Record<
+        string,
+        {
+            pkgFile: string;
+            pkgRoot: string;
+            pkgString: string;
+            pkgObject: PKG;
+        }
+    > = {};
+    const pkgsByName: Record<string, PKG> = {};
+
     let order = 1;
     for (const pkgPath of pkgPaths) {
-        core.info(`[${order++}/${length}] reading package ${pkgPath}`);
+        core.info(`[${order++}/${length}] read package ${pkgPath}`);
+
         const pkgFile = path.join(cwd, pkgPath);
+        const pkgString = fs.readFileSync(pkgFile, 'utf-8');
+        const pkgObject = JSON.parse(pkgString) as PKG;
+
+        pkgsByPath[pkgPath] = {
+            pkgRoot: path.dirname(pkgFile),
+            pkgFile,
+            pkgString,
+            pkgObject,
+        };
+        pkgsByName[pkgObject.name] = pkgObject;
+    }
+
+    order = 1;
+    for (const pkgPath of pkgPaths) {
+        core.info(`[${order++}/${length}] publish package ${pkgPath}`);
+        const pkgInfo = pkgsByPath[pkgPath];
 
         await publishPackage(
             {
-                pkgFile,
-                cwd: path.dirname(pkgFile),
+                ...pkgInfo,
+                pkgsByName,
                 name: pkg.name,
                 version: pkg.version,
                 repoOwner: repoOwner,

@@ -8,7 +8,7 @@ import { runCommand } from './utils';
 import { syncPackage } from './sync-package';
 
 export async function publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
-    core.info(`publish package cwd: ${meta.cwd}`);
+    core.info(`publish package root: ${meta.pkgRoot}`);
     core.info(`publish package name: ${meta.name}`);
     core.info(`publish package version: ${meta.version}`);
     core.info(`publish package tag: ${options.tag}`);
@@ -76,7 +76,7 @@ function _2checkPackageExist(meta: InternalPublishMeta) {
 
     try {
         const options = core.isDebug() ? '--verbose' : '';
-        runCommand(`npm view ${meta.name}@${meta.version} ${options}`, { cwd: meta.cwd, stdio: 'ignore' });
+        runCommand(`npm view ${meta.name}@${meta.version} ${options}`, { cwd: meta.pkgRoot, stdio: 'ignore' });
         core.info(`${meta.name}@${meta.version} is exists, skip publish`);
         return true;
     } catch (err) {
@@ -85,10 +85,7 @@ function _2checkPackageExist(meta: InternalPublishMeta) {
 }
 
 function _3preparePackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
-    const origin = fs.readFileSync(meta.pkgFile, 'utf-8');
-    const pkg = JSON.parse(origin) as PKG;
-
-    if (pkg.private && !options.includePrivate) {
+    if (meta.pkgObject.private && !options.includePrivate) {
         core.info(`package is private, skip publish`);
         return;
     }
@@ -109,37 +106,54 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg));
 
     const restore = () => {
         core.info('restore package.json');
-        fs.writeFileSync(meta.pkgFile, origin);
+        fs.writeFileSync(meta.pkgFile, meta.pkgString);
     };
 
-    pkg.publishConfig = {
-        ...pkg.publishConfig,
+    meta.pkgObject.publishConfig = {
+        ...meta.pkgObject.publishConfig,
         access: 'public',
     };
 
     if (!options.disableStrip) {
-        const oldPrePackJS = pkg.scripts?.prepack || '';
-        pkg.scripts = {
-            ...pkg.scripts,
+        const oldPrePackJS = meta.pkgObject.scripts?.prepack || '';
+        meta.pkgObject.scripts = {
+            ...meta.pkgObject.scripts,
             prepack: [oldPrePackJS, `node ${prePackJS}`].filter(Boolean).join(' && '),
         };
+    }
+
+    // workspace: 协议替换
+    const workspaceProtocol = 'workspace:';
+    const dependencies = meta.pkgObject.dependencies || {};
+
+    for (const [depName, depVer] of Object.entries(dependencies)) {
+        if (depVer.startsWith(workspaceProtocol)) {
+            const realVer = meta.pkgsByName[depName].version || '*';
+            const workspaceVer = depVer.slice(workspaceProtocol.length).trim();
+
+            if (workspaceVer === '*') {
+                dependencies[depName] = realVer;
+            } else if (workspaceVer.length === 1) {
+                dependencies[depName] = workspaceVer + realVer;
+            }
+        }
     }
 
     if (options.target === 'github') {
         // originName        ->  underlineName
         // my-pkg            ->  my-pkg
         // @my-scope/my-pkg  ->  my-scope__my-pkg
-        const scopeMatches = pkg.name.match(/@(.*)\/(.*)/);
+        const scopeMatches = meta.pkgObject.name.match(/@(.*)\/(.*)/);
         const scope = scopeMatches ? scopeMatches[1] : '';
-        const name = scopeMatches ? scopeMatches[2] : pkg.name;
+        const name = scopeMatches ? scopeMatches[2] : meta.pkgObject.name;
         const underlineName = scope && scope !== meta.repoOwner ? `${scope}__${name}` : name;
         const ownerName = `@${meta.repoOwner}/${underlineName}`;
 
-        core.info(`rewrite package name: ${pkg.name} -> ${ownerName}`);
-        pkg.name = ownerName;
+        core.info(`rewrite package name: ${meta.pkgObject.name} -> ${ownerName}`);
+        meta.pkgObject.name = ownerName;
     }
 
-    fs.writeFileSync(meta.pkgFile, JSON.stringify(pkg), 'utf-8');
+    fs.writeFileSync(meta.pkgFile, JSON.stringify(meta.pkgObject), 'utf-8');
 
     return restore;
 }
@@ -158,9 +172,9 @@ function _4publishPackage(meta: InternalPublishMeta, options: InternalPublishOpt
         .filter(Boolean)
         .join(' ');
 
-    runCommand('node --version', { cwd: meta.cwd });
-    runCommand('npm --version', { cwd: meta.cwd });
-    runCommand(command, { cwd: meta.cwd });
+    runCommand('node --version', { cwd: meta.pkgRoot });
+    runCommand('npm --version', { cwd: meta.pkgRoot });
+    runCommand(command, { cwd: meta.pkgRoot });
 }
 
 async function _5syncPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {

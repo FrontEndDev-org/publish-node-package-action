@@ -17,8 +17,11 @@ export type InternalPublishOptions = Required<PublishOptions>;
 export type InternalPublishMeta = {
     name: string;
     version: string;
-    cwd: string;
+    pkgRoot: string;
     pkgFile: string;
+    pkgObject: PKG;
+    pkgString: string;
+    pkgsByName: Record<string, PKG>;
     repoOwner: string;
 };
 
@@ -32,4 +35,5 @@ export type PKG = {
         registry?: string;
     };
     scripts?: Record<string, string>;
+    dependencies?: Record<string, string>;
 };
