@@ -1,11 +1,12 @@
-import cp from 'child_process';
+import cp, { type ExecSyncOptions } from 'child_process';
 import core from '@actions/core';
+import { cwd } from 'process';
 
-export function runCommand(command: string, cwd = process.cwd()) {
+export function runCommand(command: string, options: ExecSyncOptions) {
     core.info(`> ${command}`);
     cp.execSync(command, {
-        cwd,
         stdio: 'inherit',
         env: process.env,
+        ...options,
     });
 }
