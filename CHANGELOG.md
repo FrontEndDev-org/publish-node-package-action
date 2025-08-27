@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.1.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v4.0.0...v4.1.0) (2025-08-27)
+
+
+### Features
+
+* **publish:** 支持包依赖 workspace 协议替换 ([373f9de](https://github.com/FrontEndDev-org/publish-node-package-action/commit/373f9de111b1b4a21f60eefdbb9d10f531e4b7f7))
+* **publish:** 重构发布流程并移除预打包脚本 ([ab8e553](https://github.com/FrontEndDev-org/publish-node-package-action/commit/ab8e553af492ec823267589a319ccaaa4f283d80))
+
+
+### Bug Fixes
+
+* **publish:** 修复发布包时的资源清理问题 ([aa7191b](https://github.com/FrontEndDev-org/publish-node-package-action/commit/aa7191b8923a0b4ef0986695b27d9141502221f1))
+* **publish:** 修复发布未顺序进行，未正常中断 ([85c4fe9](https://github.com/FrontEndDev-org/publish-node-package-action/commit/85c4fe9e253db8c890b9de1943e46ec778c9cd92))
+* **publish:** 修复预打包脚本执行问题 ([6634fcd](https://github.com/FrontEndDev-org/publish-node-package-action/commit/6634fcde6ea394f5f82e096c92f9d7b2be562f06))
+
 ## [4.0.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v3.0.0...v4.0.0) (2025-08-27)
 
 
