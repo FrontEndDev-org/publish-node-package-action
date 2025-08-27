@@ -27616,7 +27616,7 @@ const path = require('path');
 const pkgFile = '${meta.pkgFile}';
 
 const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
-['scripts', 'publishConfig', 'devDependencies'].forEach(key => {
+['scripts', 'publishConfig', 'devDependencies'].forEach((key) => {
   pkg[key] = undefined;
 });
 fs.writeFileSync(pkgFile, JSON.stringify(pkg));
