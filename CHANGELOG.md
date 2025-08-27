@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.0.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v3.0.0...v4.0.0) (2025-08-27)
+
+
+### Features
+
+* **action:** 添加 npmmirror 同步和数据清理的配置选项 ([7e5a635](https://github.com/FrontEndDev-org/publish-node-package-action/commit/7e5a63511c8f23b3256b5048d2322929a7d805db))
+* **publish:** 重构发布流程并添加新功能 ([8079bf4](https://github.com/FrontEndDev-org/publish-node-package-action/commit/8079bf486402c3e276c2482978bd477ab014e3e0))
+* **publish:** 重构发布流程并添加新功能 ([af5d7b1](https://github.com/FrontEndDev-org/publish-node-package-action/commit/af5d7b1ebda376bdd55a78cd5e627be5841dc5f5))
+
+
+### Miscellaneous Chores
+
+* release 4.0.0 ([1fb690c](https://github.com/FrontEndDev-org/publish-node-package-action/commit/1fb690cbc58d89adf5276c8871d7a99ca8c9f5d4))
+
 ## [3.0.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v2.6.0...v3.0.0) (2025-05-18)
 
 
