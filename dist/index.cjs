@@ -27476,20 +27476,28 @@ function assertPatternsInput(input) {
 }
 var out = FastGlob;
 const glob = /* @__PURE__ */ getDefaultExportFromCjs(out);
-const registries$1 = {
+const registryRecord = {
   npm: "https://registry.npmjs.org",
   github: "https://npm.pkg.github.com"
 };
-function publishPackage(pkgPath, options) {
-  const cwd = require$$0$9.resolve(pkgPath, "..");
-  const exec = (command22) => {
-    core.info(`> ${command22}`);
-    cp.execSync(command22, {
-      cwd,
-      stdio: "inherit",
-      env: process.env
-    });
-  };
+function runCommand(command2, cwd = process.cwd()) {
+  core.info(`> ${command2}`);
+  cp.execSync(command2, {
+    cwd,
+    stdio: "inherit",
+    env: process.env
+  });
+}
+function checkPackageExist(pkg) {
+  try {
+    const options = core.isDebug() ? "--verbose" : "";
+    runCommand(`npm view ${pkg.name}@${pkg.version} ${options}`, pkg.cwd);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+function publishPackage(pkg, options) {
   const npmrcFile = require$$0$9.resolve(".npmrc");
   const backupFile = npmrcFile + "-" + Date.now();
   const exists = fs$9.existsSync(npmrcFile);
@@ -27500,7 +27508,7 @@ function publishPackage(pkgPath, options) {
   } else {
     core.info("not found .npmrc");
   }
-  const registry = registries$1[options.target];
+  const registry = registryRecord[options.target];
   const authURL = new URL(registry);
   core.info(`append .npmrc authToken(${options.token.length})`);
   fs$9.appendFileSync(npmrcFile, `
@@ -27509,27 +27517,43 @@ function publishPackage(pkgPath, options) {
   core.info("append .npmrc registry");
   fs$9.appendFileSync(npmrcFile, `registry=${registry}
 `, "utf-8");
-  core.info("publishing package");
-  const command2 = [
-    //
-    "npm",
-    "publish",
-    options.target === "npm" && !options.disableProvenance && "--provenance",
-    `--tag=${options.tag}`,
-    options.dryRun && "--dry-run",
-    core.isDebug() && "--verbose"
-  ].filter(Boolean).join(" ");
-  try {
-    exec("node --version");
-    exec("npm --version");
-    exec(command2);
-  } finally {
+  const cleanup = () => {
     if (exists) {
       fs$9.renameSync(backupFile, npmrcFile);
     } else {
       fs$9.unlinkSync(npmrcFile);
     }
-  }
+  };
+  const check2 = () => {
+    core.info(`checking package is exist`);
+    const isExist = checkPackageExist(pkg);
+    if (isExist) {
+      core.info(`package is exists, skip publish`);
+      cleanup();
+      return true;
+    }
+  };
+  const publish = () => {
+    core.info("publishing package");
+    const command2 = [
+      //
+      "npm",
+      "publish",
+      options.target === "npm" && !options.disableProvenance && "--provenance",
+      `--tag=${options.tag}`,
+      options.dryRun && "--dry-run",
+      core.isDebug() && "--verbose"
+    ].filter(Boolean).join(" ");
+    try {
+      runCommand("node --version", pkg.cwd);
+      runCommand("npm --version", pkg.cwd);
+      runCommand(command2, pkg.cwd);
+    } finally {
+      cleanup();
+    }
+  };
+  if (check2()) return;
+  publish();
 }
 async function sync(name) {
   const syncURL = `https://registry-direct.npmmirror.com/${name}/sync?sync_upstream=true`;
@@ -27587,12 +27611,8 @@ async function syncPackage(name, options) {
     await new Promise((resolve) => setTimeout(resolve, 1e3));
   }
 }
-const registries = {
-  npm: "https://registry.npmjs.org",
-  github: "https://npm.pkg.github.com"
-};
 async function publishPackages(options) {
-  const registry = registries[options.target];
+  const registry = registryRecord[options.target];
   if (!registry) {
     throw new Error(`Invalid registry target: ${options.target}`);
   }
@@ -27632,7 +27652,14 @@ async function publishPackages(options) {
     }
     try {
       core.info(`publish package: ${pkgPath} ${pkg2.name}@${pkg2.version} as ${options.tag} to ${options.target}`);
-      publishPackage(pkgPath, options);
+      publishPackage(
+        {
+          cwd: require$$0$9.dirname(pkgFile),
+          name: pkg2.name,
+          version: pkg2.version
+        },
+        options
+      );
       if (options.target === "npm" && options.syncNpmmirror) {
         core.info(`sync package: ${pkgPath} ${pkg2.name}@${pkg2.version} to npmmirror.com`);
         await syncPackage(pkg2.name, options);
