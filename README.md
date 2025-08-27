@@ -64,17 +64,19 @@ jobs:
 
 # Inputs
 
-| Name                | Required | Default  | Description                                                    |
-| ------------------- | -------- | -------- | -------------------------------------------------------------- |
-| `token`             | true     | None     | Target authorization token                                     |
-| `target`            | false    | `npm`    | Packages target, optionally `npm` OR `github`                  |
-| `tag`               | false    | `latest` | The version label to release, default is latest                |
-| `dryRun`            | false    | `false`  | Pretend to publish, but don't actually upload to the registry. |
-| `includePrivate`    | false    | `false`  | publish private packages as well.                              |
-| `disableProvenance` | false    | `false`  | Disable provenance for npm publish.                            |
-| `disableSync`       | false    | `false`  | Disable sync to npmmirror.com.                                 |
-| `disableStrip`      | false    | `false`  | Disable strip package unneeded keys.                           |
-| `syncTimeout`       | false    | `30`     | Sync timeout in seconds, default is 30s.                       |
+| Name                 | Required | Default  | Description                                                   |
+| -------------------- | -------- | -------- | ------------------------------------------------------------- |
+| `token`              | true     | None     | Target authorization token                                    |
+| `target`             | false    | `npm`    | Packages target, optionally `npm` OR `github`                 |
+| `tag`                | false    | `latest` | The version label to release, default is latest               |
+| `dryRun`             | false    | `false`  | Pretend to publish, but don't actually upload to the registry |
+| `includePrivate`     | false    | `false`  | publish private packages as well                              |
+| `disableProvenance`  | false    | `false`  | Disable provenance for npm publish                            |
+| `disableSync`        | false    | `false`  | Disable sync to npmmirror.com                                 |
+| `disableStrip`       | false    | `false`  | Disable strip package unneeded keys                           |
+| `disableCopyLicense` | false    | `false`  | Disable copy root license file, if package has no license     |
+| `disableCopyReadme`  | false    | `false`  | Disable copy root readme file, if package has no readme       |
+| `syncTimeout`        | false    | `30`     | Sync timeout in seconds, default is 30s                       |
 
 # Outputs
 

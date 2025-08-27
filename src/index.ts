@@ -15,6 +15,8 @@ async function main() {
         disableProvenance: core.getInput('disableProvenance') === 'true',
         disableSync: core.getInput('disableSync') === 'true',
         disableStrip: core.getInput('disableStrip') === 'true',
+        disableCopyLicense: core.getInput('disableCopyLicense') === 'true',
+        disableCopyReadme: core.getInput('disableCopyReadme') === 'true',
         syncTimeout: Number(core.getInput('syncTimeout')),
     };
     const defaults: InternalPublishOptions = {
@@ -26,6 +28,8 @@ async function main() {
         disableProvenance: false,
         disableSync: false,
         disableStrip: false,
+        disableCopyLicense: false,
+        disableCopyReadme: false,
         syncTimeout: 30,
     };
     const options = {} as InternalPublishOptions;

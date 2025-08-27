@@ -15,27 +15,35 @@ inputs:
     required: false
     default: latest
   dryRun:
-    description: Pretend to publish, but don't actually upload to the registry.
+    description: Pretend to publish, but don't actually upload to the registry
     required: false
     default: "false"
   includePrivate:
-    description: publish private packages as well.
+    description: publish private packages as well
     required: false
     default: "false"
   disableProvenance:
-    description: Disable provenance for npm publish.
+    description: Disable provenance for npm publish
     required: false
     default: "false"
   disableSync:
-    description: Disable sync to https://npmmirror.com.
+    description: Disable sync to https://npmmirror.com
     required: false
     default: "false"
   disableStrip:
-    description: Disable strip package unneeded keys.
+    description: Disable strip package unneeded keys
+    required: false
+    default: "false"
+  disableCopyLicense:
+    description: Disable copy root license file, if package has no license
+    required: false
+    default: "false"
+  disableCopyReadme:
+    description: Disable copy root readme file, if package has no readme
     required: false
     default: "false"
   syncTimeout:
-    description: Sync timeout in seconds, default is 30s.
+    description: Sync timeout in seconds, default is 30s
     required: false
     default: "30"
 

@@ -8,8 +8,10 @@ export type PublishOptions = {
     includePrivate: boolean;
     disableProvenance: boolean;
     disableSync: boolean;
-    disableStrip: boolean;
     syncTimeout: number;
+    disableStrip: boolean;
+    disableCopyLicense: boolean;
+    disableCopyReadme: boolean;
 };
 
 export type InternalPublishOptions = Required<PublishOptions>;
