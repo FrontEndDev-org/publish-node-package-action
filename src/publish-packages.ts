@@ -39,7 +39,7 @@ export async function publishPackages(options: InternalPublishOptions) {
         core.info(`[${order++}/${length}] reading package ${pkgPath}`);
         const pkgFile = path.join(cwd, pkgPath);
 
-        publishPackage(
+        await publishPackage(
             {
                 pkgFile,
                 cwd: path.dirname(pkgFile),
