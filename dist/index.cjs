@@ -27559,21 +27559,18 @@ async function publishPackage(meta, options) {
     restoreNpmrc();
     return;
   }
-  const { prePackJS, removePrePackJS } = _3generatePrePackScript(meta);
-  const restorePkgJson = _4preparePackage(prePackJS, meta, options);
+  const restorePkgJson = _3preparePackage(meta, options);
   if (!restorePkgJson) {
     restoreNpmrc();
-    removePrePackJS();
     return;
   }
   try {
-    _5publishPackage(meta, options);
+    _4publishPackage(meta, options);
   } finally {
     restorePkgJson();
     restoreNpmrc();
-    removePrePackJS();
   }
-  await _6syncPackage(meta, options);
+  await _5syncPackage(meta, options);
 }
 function _1rewriteNpmrc(meta, options) {
   core.info(`rewriting .npmrc`);
@@ -27611,7 +27608,13 @@ function _2checkPackageExist(meta) {
     return false;
   }
 }
-function _3generatePrePackScript(meta, options) {
+function _3preparePackage(meta, options) {
+  const origin = fs$9.readFileSync(meta.pkgFile, "utf-8");
+  const pkg = JSON.parse(origin);
+  if (pkg.private && !options.includePrivate) {
+    core.info(`package is private, skip publish`);
+    return;
+  }
   const scriptCode = `
 const fs = require('fs');
 const path = require('path');
@@ -27625,23 +27628,11 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg));
     `;
   const prePackJS = require$$0$9.join(meta.cwd, `prepack-${Date.now()}.js`);
   fs$9.writeFileSync(prePackJS, scriptCode);
-  return {
-    prePackJS,
-    removePrePackJS() {
-      fs$9.unlinkSync(prePackJS);
-    }
-  };
-}
-function _4preparePackage(prePackJS, meta, options) {
-  const origin = fs$9.readFileSync(meta.pkgFile, "utf-8");
-  const pkg = JSON.parse(origin);
-  if (pkg.private && !options.includePrivate) {
-    core.info(`package is private, skip publish`);
-    return;
-  }
   const restore = () => {
     core.info("restore package.json");
     fs$9.writeFileSync(meta.pkgFile, origin);
+    core.info("remove prepack script");
+    fs$9.unlinkSync(prePackJS);
   };
   pkg.publishConfig = {
     ...pkg.publishConfig,
@@ -27666,7 +27657,7 @@ function _4preparePackage(prePackJS, meta, options) {
   fs$9.writeFileSync(meta.pkgFile, JSON.stringify(pkg), "utf-8");
   return restore;
 }
-function _5publishPackage(meta, options) {
+function _4publishPackage(meta, options) {
   core.info("publishing package");
   const command2 = [
     //
@@ -27681,7 +27672,7 @@ function _5publishPackage(meta, options) {
   runCommand("npm --version", { cwd: meta.cwd });
   runCommand(command2, { cwd: meta.cwd });
 }
-async function _6syncPackage(meta, options) {
+async function _5syncPackage(meta, options) {
   if (options.target !== "npm") return;
   if (options.disableSync) return;
   core.info(`syncing package`);
