@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v3.0.0...v3.1.0) (2025-08-27)
+
+
+### Features
+
+* **publish:** 重构发布流程并添加新功能 ([af5d7b1](https://github.com/FrontEndDev-org/publish-node-package-action/commit/af5d7b1ebda376bdd55a78cd5e627be5841dc5f5))
+
 ## [3.0.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v2.6.0...v3.0.0) (2025-05-18)
 
 
