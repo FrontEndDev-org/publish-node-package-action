@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.0.0...v5.1.0) (2025-08-27)
+
+
+### Features
+
+* 更新 action name ([4e855da](https://github.com/FrontEndDev-org/publish-node-package-action/commit/4e855da9dad1ff8c342e78616e3e81d10d4fd2e8))
+
 ## [5.0.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v4.2.0...v5.0.0) (2025-08-27)
 
 
