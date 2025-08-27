@@ -8,6 +8,7 @@ async function main() {
   // 1. 读取配置
   const token = core.getInput('token');
   core.setSecret(token);
+  const defaultRegistry = 'https://registry.npmjs.org';
   const inputs: PublishOptions = {
     token,
     tag: core.getInput('tag'),
@@ -18,8 +19,8 @@ async function main() {
     disableStrip: core.getInput('disableStrip') === 'true',
     disableCopyLicense: core.getInput('disableCopyLicense') === 'true',
     disableCopyReadme: core.getInput('disableCopyReadme') === 'true',
-    syncTimeout: Number(core.getInput('syncTimeout')),
-    registry: core.getInput('repository'),
+    syncTimeout: Number(core.getInput('syncTimeout') || '30'),
+    registry: core.getInput('repository') || defaultRegistry,
   };
   const defaults: InternalPublishOptions = {
     dryRun: false,
@@ -32,7 +33,7 @@ async function main() {
     disableCopyLicense: false,
     disableCopyReadme: false,
     syncTimeout: 30,
-    registry: 'https://registry.npmjs.org',
+    registry: defaultRegistry,
   };
   const options = {} as InternalPublishOptions;
 
