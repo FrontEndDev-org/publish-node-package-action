@@ -28556,7 +28556,7 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"4.2.0"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.0.0"}`);
   const token = core.getInput("token");
   core.setSecret(token);
   const inputs = {
