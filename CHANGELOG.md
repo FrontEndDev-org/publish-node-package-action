@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v4.1.0...v4.2.0) (2025-08-27)
+
+
+### Features
+
+* **publish-package:** 调整私有包发布逻辑 ([d316cc9](https://github.com/FrontEndDev-org/publish-node-package-action/commit/d316cc912840699bfaa0757cc58037dcc508bb93))
+* **publish:** 重构发布流程中的包信息处理 ([c4ddee6](https://github.com/FrontEndDev-org/publish-node-package-action/commit/c4ddee645b48797fcc9d6a1cb53e2693ef922ecd))
+
 ## [4.1.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v4.0.0...v4.1.0) (2025-08-27)
 
 
