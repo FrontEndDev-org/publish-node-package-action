@@ -26,6 +26,7 @@ const require$$3$2 = require("zlib");
 const require$$6 = require("string_decoder");
 const require$$0$8 = require("diagnostics_channel");
 const cp = require("child_process");
+require("process");
 var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
@@ -27480,12 +27481,12 @@ const registryRecord = {
   npm: "https://registry.npmjs.org",
   github: "https://npm.pkg.github.com"
 };
-function runCommand(command2, cwd = process.cwd()) {
+function runCommand(command2, options) {
   core.info(`> ${command2}`);
   cp.execSync(command2, {
-    cwd,
     stdio: "inherit",
-    env: process.env
+    env: process.env,
+    ...options
   });
 }
 async function sync(name) {
@@ -27552,74 +27553,27 @@ async function publishPackage(meta, options) {
   core.info(`publish package target: ${options.target}`);
   core.info(`publish package sync: ${!options.disableSync}`);
   core.info(`publish package strip: ${!options.disableStrip}`);
-  const prePackJS = _1generatePrePackScript(meta);
-  const restorePkgJson = _2preparePackage(prePackJS, meta, options);
-  const restoreNpmrc = _3rewriteNpmrc(meta, options);
-  const isExist = _4checkPackageExist(meta);
+  const restoreNpmrc = _1rewriteNpmrc(meta, options);
+  const isExist = _2checkPackageExist(meta);
   if (isExist) {
-    restorePkgJson?.();
+    restoreNpmrc();
+    return;
+  }
+  const prePackJS = _3generatePrePackScript(meta);
+  const restorePkgJson = _4preparePackage(prePackJS, meta, options);
+  if (!restorePkgJson) {
     restoreNpmrc();
     return;
   }
   try {
     _5publishPackage(meta, options);
   } finally {
-    restorePkgJson?.();
+    restorePkgJson();
     restoreNpmrc();
   }
   _6syncPackage(meta, options);
 }
-function _1generatePrePackScript(meta, options) {
-  const scriptCode = `
-const fs = require('fs');
-const path = require('path');
-const pkgFile = '${meta.pkgFile}';
-
-const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
-['scripts', 'publishConfig', 'devDependencies'].forEach(key => {
-  pkg[key] = undefined;
-});
-fs.writeFileSync(pkgFile, JSON.stringify(pkg));
-    `;
-  const scriptFile = require$$0$9.join(require$$0.tmpdir(), `prepack-${Date.now()}.js`);
-  fs$9.writeFileSync(scriptFile, scriptCode);
-  return scriptFile;
-}
-function _2preparePackage(prePackJS, meta, options) {
-  const origin = fs$9.readFileSync(meta.pkgFile, "utf-8");
-  const pkg = JSON.parse(origin);
-  const restore = () => {
-    core.info("restore package.json");
-    fs$9.writeFileSync(meta.pkgFile, origin);
-  };
-  if (pkg.private && !options.includePrivate) {
-    core.info(`package is private, skip publish`);
-    return;
-  }
-  pkg.publishConfig = {
-    ...pkg.publishConfig,
-    access: "public"
-  };
-  if (!options.disableStrip) {
-    const oldPrePackJS = pkg.scripts?.prepack || "";
-    pkg.scripts = {
-      ...pkg.scripts,
-      prepack: [oldPrePackJS, prePackJS].filter(Boolean).join(" && ")
-    };
-  }
-  if (options.target === "github") {
-    const scopeMatches = pkg.name.match(/@(.*)\/(.*)/);
-    const scope = scopeMatches ? scopeMatches[1] : "";
-    const name = scopeMatches ? scopeMatches[2] : pkg.name;
-    const underlineName = scope && scope !== meta.repoOwner ? `${scope}__${name}` : name;
-    const ownerName = `@${meta.repoOwner}/${underlineName}`;
-    core.info(`rewrite package name: ${pkg.name} -> ${ownerName}`);
-    pkg.name = ownerName;
-  }
-  fs$9.writeFileSync(meta.pkgFile, JSON.stringify(pkg), "utf-8");
-  return restore;
-}
-function _3rewriteNpmrc(meta, options) {
+function _1rewriteNpmrc(meta, options) {
   core.info(`rewriting .npmrc`);
   const npmrcFile = require$$0$9.resolve(".npmrc");
   const exists = fs$9.existsSync(npmrcFile);
@@ -27644,16 +27598,66 @@ function _3rewriteNpmrc(meta, options) {
 `, "utf-8");
   return restore;
 }
-function _4checkPackageExist(meta) {
+function _2checkPackageExist(meta) {
   core.info(`checking package`);
   try {
     const options = core.isDebug() ? "--verbose" : "";
-    runCommand(`npm view ${meta.name}@${meta.version} ${options}`, meta.cwd);
+    runCommand(`npm view ${meta.name}@${meta.version} ${options}`, { cwd: meta.cwd, stdio: "ignore" });
     core.info(`${meta.name}@${meta.version} is exists, skip publish`);
     return true;
   } catch (err) {
     return false;
   }
+}
+function _3generatePrePackScript(meta, options) {
+  const scriptCode = `
+const fs = require('fs');
+const path = require('path');
+const pkgFile = '${meta.pkgFile}';
+
+const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
+['scripts', 'publishConfig', 'devDependencies'].forEach(key => {
+  pkg[key] = undefined;
+});
+fs.writeFileSync(pkgFile, JSON.stringify(pkg));
+    `;
+  const scriptFile = require$$0$9.join(require$$0.tmpdir(), `prepack-${Date.now()}.js`);
+  fs$9.writeFileSync(scriptFile, scriptCode);
+  return scriptFile;
+}
+function _4preparePackage(prePackJS, meta, options) {
+  const origin = fs$9.readFileSync(meta.pkgFile, "utf-8");
+  const pkg = JSON.parse(origin);
+  if (pkg.private && !options.includePrivate) {
+    core.info(`package is private, skip publish`);
+    return;
+  }
+  const restore = () => {
+    core.info("restore package.json");
+    fs$9.writeFileSync(meta.pkgFile, origin);
+  };
+  pkg.publishConfig = {
+    ...pkg.publishConfig,
+    access: "public"
+  };
+  if (!options.disableStrip) {
+    const oldPrePackJS = pkg.scripts?.prepack || "";
+    pkg.scripts = {
+      ...pkg.scripts,
+      prepack: [oldPrePackJS, prePackJS].filter(Boolean).join(" && ")
+    };
+  }
+  if (options.target === "github") {
+    const scopeMatches = pkg.name.match(/@(.*)\/(.*)/);
+    const scope = scopeMatches ? scopeMatches[1] : "";
+    const name = scopeMatches ? scopeMatches[2] : pkg.name;
+    const underlineName = scope && scope !== meta.repoOwner ? `${scope}__${name}` : name;
+    const ownerName = `@${meta.repoOwner}/${underlineName}`;
+    core.info(`rewrite package name: ${pkg.name} -> ${ownerName}`);
+    pkg.name = ownerName;
+  }
+  fs$9.writeFileSync(meta.pkgFile, JSON.stringify(pkg), "utf-8");
+  return restore;
 }
 function _5publishPackage(meta, options) {
   core.info("publishing package");
@@ -27666,9 +27670,9 @@ function _5publishPackage(meta, options) {
     options.dryRun && "--dry-run",
     core.isDebug() && "--verbose"
   ].filter(Boolean).join(" ");
-  runCommand("node --version", meta.cwd);
-  runCommand("npm --version", meta.cwd);
-  runCommand(command2, meta.cwd);
+  runCommand("node --version", { cwd: meta.cwd });
+  runCommand("npm --version", { cwd: meta.cwd });
+  runCommand(command2, { cwd: meta.cwd });
 }
 async function _6syncPackage(meta, options) {
   if (options.target === "npm" && options.disableSync) {
@@ -27699,7 +27703,7 @@ async function publishPackages(options) {
   for (const pkgPath of pkgPaths) {
     core.info(`[${order++}/${length}] reading package ${pkgPath}`);
     const pkgFile = require$$0$9.join(cwd, pkgPath);
-    publishPackage(
+    await publishPackage(
       {
         pkgFile,
         cwd: require$$0$9.dirname(pkgFile),
