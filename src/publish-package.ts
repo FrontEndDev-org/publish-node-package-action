@@ -93,7 +93,7 @@ function _3preparePackage(meta: InternalPublishMeta, options: InternalPublishOpt
         return;
     }
 
-    const scriptCode = `
+    const prePackCode = `
 const fs = require('fs');
 const path = require('path');
 const pkgFile = '${meta.pkgFile}';
@@ -104,15 +104,12 @@ const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
 });
 fs.writeFileSync(pkgFile, JSON.stringify(pkg));
     `;
-    const prePackJS = path.join(meta.cwd, `prepack-${Date.now()}.js`);
-    fs.writeFileSync(prePackJS, scriptCode);
+    const prePackJS = path.join(os.tmpdir(), `prepack-${Date.now()}.js`);
+    fs.writeFileSync(prePackJS, prePackCode);
 
     const restore = () => {
         core.info('restore package.json');
         fs.writeFileSync(meta.pkgFile, origin);
-
-        core.info('remove prepack script');
-        fs.unlinkSync(prePackJS);
     };
 
     pkg.publishConfig = {
@@ -124,7 +121,7 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg));
         const oldPrePackJS = pkg.scripts?.prepack || '';
         pkg.scripts = {
             ...pkg.scripts,
-            prepack: [oldPrePackJS, prePackJS].filter(Boolean).join(' && '),
+            prepack: [oldPrePackJS, `node ${prePackJS}`].filter(Boolean).join(' && '),
         };
     }
 
