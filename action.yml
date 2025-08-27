@@ -1,4 +1,4 @@
-name: 将 NodeJS 软件包发布到存储库
+name: publish-node-package-action
 author: 云淡然 <hi@ydr.me> (https://ydr.me)
 description: 将 NodeJS 软件包发布到存储库
 
