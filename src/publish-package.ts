@@ -94,7 +94,7 @@ const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
 ['scripts', 'publishConfig', 'devDependencies'].forEach((key) => {
   pkg[key] = undefined;
 });
-fs.writeFileSync(pkgFile, JSON.stringify(pkg));
+fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
     `;
   const prePackJS = path.join(os.tmpdir(), `prepack-${Date.now()}.js`);
   fs.writeFileSync(prePackJS, prePackCode);
