@@ -24731,6 +24731,7 @@ function __findFile(pattern2, root) {
   return file2;
 }
 function _4copyFile(pattern2, fileName, meta) {
+  if (!meta.isWorkspace) return;
   const sourceFile = __findFile(pattern2, meta.prjRoot);
   if (!sourceFile) return;
   const targetFile = __findFile(pattern2, meta.pkgRoot);
@@ -24810,7 +24811,7 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"5.2.1"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.3.0"}`);
   const token = core.getInput("token");
   core.setSecret(token);
   const defaultRegistry = "https://registry.npmjs.org";
