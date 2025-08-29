@@ -7,8 +7,32 @@ import { runCommand } from './utils';
 import { syncPackage } from './sync-package';
 import { glob } from 'fast-glob';
 
+// 打包时需要修剪的字段
+const STRIP_FIELDS = [
+  'scripts',
+  'devDependencies',
+  'config',
+  'private',
+  'publishConfig',
+  'bundleDependencies',
+  'devEngines',
+  'files',
+];
+// 打包时需要继承的字段
+const INHERIT_FIELDS = [
+  'keywords',
+  'homepage',
+  'bugs',
+  'license',
+  'author',
+  'contributors',
+  'funding',
+  'maintainers',
+  'repository',
+];
+
 export async function publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
-  core.info(`publish package root: ${meta.pkgRoot}`);
+  core.info(`publish package path: ${meta.pkgPath}`);
   core.info(`publish package name: ${meta.pkgObject.name}`);
   core.info(`publish package version: ${meta.pkgObject.version}`);
   core.info(`publish package private: ${!!meta.pkgObject.private}`);
@@ -90,14 +114,20 @@ function _2checkPackageExist(meta: InternalPublishMeta) {
 }
 
 function _3preparePackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
+  const inheritValues = meta.isWorkspace
+    ? INHERIT_FIELDS.map((field) => ({ field, value: meta.rootPkgObject[field as keyof PKG] }))
+    : [];
   const prePackCode = `
 const fs = require('fs');
 const path = require('path');
 const pkgFile = '${meta.pkgFile}';
 
 const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
-['scripts', 'publishConfig', 'devDependencies'].forEach((key) => {
-  pkg[key] = undefined;
+${JSON.stringify(STRIP_FIELDS)}.forEach((field) => {
+  pkg[field] = undefined;
+});
+${JSON.stringify(inheritValues)}.forEach(({field, value}) => {
+  pkg[field] = typeof pkg[field] === 'undefined' ? value : pkg[field];
 });
 fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
     `;
@@ -109,11 +139,18 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
     fs.writeFileSync(meta.pkgFile, meta.pkgString);
   };
 
+  // 添加可公开发布标记
   meta.pkgObject.publishConfig = {
     ...meta.pkgObject.publishConfig,
     access: 'public',
   };
 
+  // 添加仓库信息
+  if (!meta.pkgObject.repository) {
+    meta.pkgObject.repository = meta.rootPkgObject.repository;
+  }
+
+  // 打包前修剪
   if (!options.disableStrip) {
     const oldPrePackJS = meta.pkgObject.scripts?.prepack || '';
     meta.pkgObject.scripts = {

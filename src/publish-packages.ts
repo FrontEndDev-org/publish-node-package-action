@@ -13,7 +13,7 @@ export async function publishPackages(options: InternalPublishOptions) {
     (pkg.workspaces || []).map((ws) => path.join(ws, 'package.json')),
     { cwd: prjRoot, onlyFiles: true },
   );
-
+  const isWorkspace = !!pkg.workspaces;
   const pkgPaths = ['package.json', ...childPkgPaths];
   core.info(`pkgPaths: ${JSON.stringify(pkgPaths)}`);
   const length = pkgPaths.length;
@@ -22,6 +22,7 @@ export async function publishPackages(options: InternalPublishOptions) {
     string,
     {
       pkgFile: string;
+      pkgPath: string;
       pkgRoot: string;
       pkgString: string;
       pkgObject: PKG;
@@ -29,6 +30,7 @@ export async function publishPackages(options: InternalPublishOptions) {
   > = {};
   const pkgsByName: Record<string, PKG> = {};
 
+  let rootPkgObject: PKG;
   let order = 1;
   for (const pkgPath of pkgPaths) {
     core.info(`[${order++}/${length}] read package ${pkgPath}`);
@@ -36,8 +38,10 @@ export async function publishPackages(options: InternalPublishOptions) {
     const pkgFile = path.join(prjRoot, pkgPath);
     const pkgString = fs.readFileSync(pkgFile, 'utf-8');
     const pkgObject = JSON.parse(pkgString) as PKG;
+    if (pkgPath === 'package.json') rootPkgObject = pkgObject;
 
     pkgsByPath[pkgPath] = {
+      pkgPath,
       pkgRoot: path.dirname(pkgFile),
       pkgFile,
       pkgString,
@@ -54,6 +58,9 @@ export async function publishPackages(options: InternalPublishOptions) {
     await publishPackage(
       {
         ...pkgInfo,
+        isWorkspace,
+        isRootPkg: pkgPath === 'package.json',
+        rootPkgObject: rootPkgObject!,
         prjRoot,
         pkgsByName,
       },

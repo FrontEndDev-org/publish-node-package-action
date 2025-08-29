@@ -15,10 +15,14 @@ export type PublishOptions = {
 export type InternalPublishOptions = Required<PublishOptions>;
 
 export type InternalPublishMeta = {
+  isWorkspace: boolean;
+  isRootPkg: boolean;
   prjRoot: string;
   pkgRoot: string;
   pkgFile: string;
+  pkgPath: string;
   pkgObject: PKG;
+  rootPkgObject: PKG;
   pkgString: string;
   pkgsByName: Record<string, PKG>;
 };
@@ -34,4 +38,5 @@ export type PKG = {
   };
   scripts?: Record<string, string>;
   dependencies?: Record<string, string>;
+  repository?: Record<string, string> | string;
 };
