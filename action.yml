@@ -1,21 +1,21 @@
-name: publish-node-package-action
+name: Publish Node.js package
 author: 云淡然 <hi@ydr.me> (https://ydr.me)
-description: 将 NodeJS 软件包发布到存储库
+description: 发布 Node.js 软件包
 
 inputs:
   token:
-    description: 授权令牌
+    description: 软件包源的授权令牌
     required: true
   registry:
-    description: 包源地址
+    description: 软件包源地址
     required: false
     default: "https://registry.npmjs.org"
   tag:
-    description: 要发布的版本标签，默认为 latest
+    description: 版本标签，默认为 latest
     required: false
     default: latest
   dryRun:
-    description: 模拟发布，但不实际上传到注册表
+    description: 模拟发布
     required: false
     default: "false"
   includePrivate:
@@ -27,23 +27,23 @@ inputs:
     required: false
     default: "false"
   disableSync:
-    description: 禁用同步到 npmmirror.com
+    description: 禁用同步到 npmMirror.com
     required: false
     default: "false"
   disableStrip:
-    description: 禁用删除包中不需要的键，如 `scripts`、`devDependencies` 等
+    description: 禁用修剪软件包中 package.json 中的字段，workspace 模式时会继承相关字段
     required: false
     default: "false"
   disableCopyLicense:
-    description: 禁用复制根目录许可证文件（如果包没有的情况）
+    description: 禁用复制根目录许可证文件（只在 workspace 模式启用，且软件包没有时）
     required: false
     default: "false"
   disableCopyReadme:
-    description: 禁用复制根目录 README 文件（如果包没有的情况）
+    description: 禁用复制根目录 README 文件（只在 workspace 模式启用，且软件包没有时）
     required: false
     default: "false"
   syncTimeout:
-    description: 同步超时时间（秒），默认为 30 秒
+    description: 同步到 npmMirror.com 超时时间（秒），默认为 30 秒
     required: false
     default: "30"
 
