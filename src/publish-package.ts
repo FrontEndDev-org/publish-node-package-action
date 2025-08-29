@@ -198,6 +198,8 @@ function __findFile(pattern: RegExp, root: string) {
 }
 
 function _4copyFile(pattern: RegExp, fileName: string, meta: InternalPublishMeta) {
+  if (!meta.isWorkspace) return;
+
   const sourceFile = __findFile(pattern, meta.prjRoot);
   if (!sourceFile) return;
 
