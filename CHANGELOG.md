@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.1](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.2.0...v5.2.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* **src:** 修复 registry 配置获取逻辑 ([27bc9b1](https://github.com/FrontEndDev-org/publish-node-package-action/commit/27bc9b113d3c6ccf5c56a1cabd3ad2d2a77e1998))
+
 ## [5.2.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.1.0...v5.2.0) (2025-08-27)
 
 
