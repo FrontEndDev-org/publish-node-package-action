@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.4.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.3.0...v5.4.0) (2025-08-29)
+
+
+### Features
+
+* **publish:** 优化 copyFile 函数，只在工作区模式下执行 ([29e9ebb](https://github.com/FrontEndDev-org/publish-node-package-action/commit/29e9ebbb61e793984360f94554d2b30962caca04))
+
 ## [5.3.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.2.1...v5.3.0) (2025-08-29)
 
 
