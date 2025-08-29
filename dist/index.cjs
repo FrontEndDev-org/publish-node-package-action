@@ -24578,8 +24578,29 @@ async function syncPackage(name, options) {
     await new Promise((resolve) => setTimeout(resolve, 1e3));
   }
 }
+const STRIP_FIELDS = [
+  "scripts",
+  "devDependencies",
+  "config",
+  "private",
+  "publishConfig",
+  "bundleDependencies",
+  "devEngines",
+  "files"
+];
+const INHERIT_FIELDS = [
+  "keywords",
+  "homepage",
+  "bugs",
+  "license",
+  "author",
+  "contributors",
+  "funding",
+  "maintainers",
+  "repository"
+];
 async function publishPackage(meta, options) {
-  core.info(`publish package root: ${meta.pkgRoot}`);
+  core.info(`publish package path: ${meta.pkgPath}`);
   core.info(`publish package name: ${meta.pkgObject.name}`);
   core.info(`publish package version: ${meta.pkgObject.version}`);
   core.info(`publish package private: ${!!meta.pkgObject.private}`);
@@ -24648,14 +24669,18 @@ function _2checkPackageExist(meta) {
   }
 }
 function _3preparePackage(meta, options) {
+  const inheritValues = meta.isWorkspace ? INHERIT_FIELDS.map((field) => ({ field, value: meta.rootPkgObject[field] })) : [];
   const prePackCode = `
 const fs = require('fs');
 const path = require('path');
 const pkgFile = '${meta.pkgFile}';
 
 const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
-['scripts', 'publishConfig', 'devDependencies'].forEach((key) => {
-  pkg[key] = undefined;
+${JSON.stringify(STRIP_FIELDS)}.forEach((field) => {
+  pkg[field] = undefined;
+});
+${JSON.stringify(inheritValues)}.forEach(({field, value}) => {
+  pkg[field] = typeof pkg[field] === 'undefined' ? value : pkg[field];
 });
 fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
     `;
@@ -24669,6 +24694,9 @@ fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
     ...meta.pkgObject.publishConfig,
     access: "public"
   };
+  if (!meta.pkgObject.repository) {
+    meta.pkgObject.repository = meta.rootPkgObject.repository;
+  }
   if (!options.disableStrip) {
     const oldPrePackJS = meta.pkgObject.scripts?.prepack || "";
     meta.pkgObject.scripts = {
@@ -24698,6 +24726,8 @@ function __findFile(pattern2, root) {
   if (!fileName) return;
   const file2 = require$$0$a.join(root, fileName);
   if (!fs$9.existsSync(file2)) return;
+  const stat2 = fs$9.lstatSync(file2);
+  if (stat2.isSymbolicLink()) return;
   return file2;
 }
 function _4copyFile(pattern2, fileName, meta) {
@@ -24739,18 +24769,22 @@ async function publishPackages(options) {
     (pkg.workspaces || []).map((ws) => require$$0$a.join(ws, "package.json")),
     { cwd: prjRoot, onlyFiles: true }
   );
+  const isWorkspace = !!pkg.workspaces;
   const pkgPaths = ["package.json", ...childPkgPaths];
   core.info(`pkgPaths: ${JSON.stringify(pkgPaths)}`);
   const length = pkgPaths.length;
   const pkgsByPath = {};
   const pkgsByName = {};
+  let rootPkgObject;
   let order = 1;
   for (const pkgPath of pkgPaths) {
     core.info(`[${order++}/${length}] read package ${pkgPath}`);
     const pkgFile = require$$0$a.join(prjRoot, pkgPath);
     const pkgString = fs$9.readFileSync(pkgFile, "utf-8");
     const pkgObject = JSON.parse(pkgString);
+    if (pkgPath === "package.json") rootPkgObject = pkgObject;
     pkgsByPath[pkgPath] = {
+      pkgPath,
       pkgRoot: require$$0$a.dirname(pkgFile),
       pkgFile,
       pkgString,
@@ -24765,6 +24799,9 @@ async function publishPackages(options) {
     await publishPackage(
       {
         ...pkgInfo,
+        isWorkspace,
+        isRootPkg: pkgPath === "package.json",
+        rootPkgObject,
         prjRoot,
         pkgsByName
       },
@@ -24773,7 +24810,7 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"5.2.0"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.2.1"}`);
   const token = core.getInput("token");
   core.setSecret(token);
   const defaultRegistry = "https://registry.npmjs.org";
