@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.3.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.2.1...v5.3.0) (2025-08-29)
+
+
+### Features
+
+* **publish:** 优化打包流程并添加继承属性 ([8970d1c](https://github.com/FrontEndDev-org/publish-node-package-action/commit/8970d1cce1285b8465138fc01b08130c30bed69d))
+
+
+### Bug Fixes
+
+* **publish:** 避免符号链接导致的错误 ([807cd99](https://github.com/FrontEndDev-org/publish-node-package-action/commit/807cd996dda9bb374cbc1fe145adffcf531bb7b2))
+
 ## [5.2.1](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.2.0...v5.2.1) (2025-08-27)
 
 
