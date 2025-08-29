@@ -153,6 +153,10 @@ function __findFile(pattern: RegExp, root: string) {
   const file = path.join(root, fileName);
   if (!fs.existsSync(file)) return;
 
+  // 检查文件是否为符号链接
+  const stat = fs.lstatSync(file);
+  if (stat.isSymbolicLink()) return;
+
   return file;
 }
 
