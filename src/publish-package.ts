@@ -16,7 +16,6 @@ const STRIP_FIELDS = [
   'publishConfig',
   'bundleDependencies',
   'devEngines',
-  'files',
 ];
 // 打包时需要继承的字段
 const INHERIT_FIELDS = [
