@@ -1,9 +1,12 @@
 import { publishPackages } from './publish-packages';
 import type { InternalPublishOptions, PublishOptions } from './types';
 import core from '@actions/core';
+import { runCommand } from './utils';
 
 async function main() {
   core.info(`using ${process.env.PKG_NAME}@${process.env.PKG_VERSION}`);
+  runCommand('node --version');
+  runCommand('npm --version');
 
   // 1. 读取配置
   const token = core.getInput('token');

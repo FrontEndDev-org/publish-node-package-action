@@ -32,7 +32,6 @@ const INHERIT_FIELDS = [
 ];
 
 export async function publishPackage(meta: InternalPublishMeta, options: InternalPublishOptions) {
-  core.info(`publish package path: ${meta.pkgPath}`);
   core.info(`publish package name: ${meta.pkgObject.name}`);
   core.info(`publish package version: ${meta.pkgObject.version}`);
   core.info(`publish package private: ${!!meta.pkgObject.private}`);
@@ -228,8 +227,6 @@ function _5publishPackage(meta: InternalPublishMeta, options: InternalPublishOpt
     .filter(Boolean)
     .join(' ');
 
-  runCommand('node --version', { cwd: meta.pkgRoot });
-  runCommand('npm --version', { cwd: meta.pkgRoot });
   runCommand(command, { cwd: meta.pkgRoot });
 }
 
