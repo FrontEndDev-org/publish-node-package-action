@@ -68,4 +68,10 @@ export async function syncPackage(name: string, options: PublishOptions) {
     checked = await check(name, logId);
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
+
+  if (checked) {
+    core.info(`同步成功`);
+  } else {
+    core.info(`同步超时`);
+  }
 }
