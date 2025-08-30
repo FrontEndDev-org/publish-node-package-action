@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.5.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.4.0...v5.5.0) (2025-08-30)
+
+
+### Features
+
+* 从打包配置中移除 'files' 字段 ([593390d](https://github.com/FrontEndDev-org/publish-node-package-action/commit/593390d83e3987fc73337b902364084913e03481))
+* 优化命令执行和信息输出 ([d7abff9](https://github.com/FrontEndDev-org/publish-node-package-action/commit/d7abff90c403b92637d990814786ca218b7da59e))
+* 增加同步成功或超时的提示信息 ([41fa6cf](https://github.com/FrontEndDev-org/publish-node-package-action/commit/41fa6cf82ed26458708b652870e905d1f78e2b30))
+
 ## [5.4.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.3.0...v5.4.0) (2025-08-29)
 
 
