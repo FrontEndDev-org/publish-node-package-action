@@ -24577,6 +24577,11 @@ async function syncPackage(name, options) {
     checked = await check(name, logId);
     await new Promise((resolve) => setTimeout(resolve, 1e3));
   }
+  if (checked) {
+    core.info(`同步成功`);
+  } else {
+    core.info(`同步超时`);
+  }
 }
 const STRIP_FIELDS = [
   "scripts",
@@ -24585,8 +24590,7 @@ const STRIP_FIELDS = [
   "private",
   "publishConfig",
   "bundleDependencies",
-  "devEngines",
-  "files"
+  "devEngines"
 ];
 const INHERIT_FIELDS = [
   "keywords",
@@ -24600,7 +24604,6 @@ const INHERIT_FIELDS = [
   "repository"
 ];
 async function publishPackage(meta, options) {
-  core.info(`publish package path: ${meta.pkgPath}`);
   core.info(`publish package name: ${meta.pkgObject.name}`);
   core.info(`publish package version: ${meta.pkgObject.version}`);
   core.info(`publish package private: ${!!meta.pkgObject.private}`);
@@ -24753,8 +24756,6 @@ function _5publishPackage(meta, options) {
     options.dryRun && "--dry-run",
     core.isDebug() && "--verbose"
   ].filter(Boolean).join(" ");
-  runCommand("node --version", { cwd: meta.pkgRoot });
-  runCommand("npm --version", { cwd: meta.pkgRoot });
   runCommand(command2, { cwd: meta.pkgRoot });
 }
 async function _6syncPackage(meta, options) {
@@ -24811,7 +24812,9 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"5.3.0"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.4.0"}`);
+  runCommand("node --version");
+  runCommand("npm --version");
   const token = core.getInput("token");
   core.setSecret(token);
   const defaultRegistry = "https://registry.npmjs.org";
