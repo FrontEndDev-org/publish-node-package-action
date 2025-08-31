@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.5.1](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.5.0...v5.5.1) (2025-08-31)
+
+
+### Bug Fixes
+
+* **publish:** 修复文件复制时可能存在的链接文件问题 ([f4950d4](https://github.com/FrontEndDev-org/publish-node-package-action/commit/f4950d40d2a9cd965f962de5ebb5c0adcfe28f12))
+
 ## [5.5.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.4.0...v5.5.0) (2025-08-30)
 
 
