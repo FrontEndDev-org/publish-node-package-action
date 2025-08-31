@@ -205,6 +205,11 @@ function _4copyFile(pattern: RegExp, fileName: string, meta: InternalPublishMeta
   if (targetFile) return;
 
   const destFile = path.join(meta.pkgRoot, fileName);
+
+  // 如果目标文件是链接文件，如果不删除则复制不成功
+  fs.unlinkSync(destFile);
+
+  // 复制文件
   fs.copyFileSync(sourceFile, destFile);
 
   return () => {
