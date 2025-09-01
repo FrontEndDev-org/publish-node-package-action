@@ -24,6 +24,7 @@ export default {
   plugins: {
     '@release-it/conventional-changelog': {
       preset: 'angular',
+      infile: 'CHANGELOG.md',
     },
   },
 } satisfies Config;
