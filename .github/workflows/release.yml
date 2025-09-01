@@ -21,16 +21,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump version
+      - name: Version bump
         run: npx release-it --ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract version
-        run: node scripts/ci-version.cjs
+      - name: Version extract
+        run: node scripts/ci-version-extract.cjs
         id: version
 
-      - name: Tag version
+      - name: Version tag
         uses: jacobsvante/tag-major-minor-action@v0
         with:
             major: ${{ steps.version.outputs.major }}
