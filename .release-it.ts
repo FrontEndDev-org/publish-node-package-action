@@ -21,7 +21,7 @@ export default {
   },
   plugins: {
     '@release-it/conventional-changelog': {
-      preset: 'conventionalcommits',
+      preset: 'angular',
     },
   },
 } satisfies Config;
