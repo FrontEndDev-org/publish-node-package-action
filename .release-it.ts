@@ -9,6 +9,9 @@ export default {
   },
   github: {
     release: true,
+    comments: {
+      submit: true,
+    },
   },
   npm: {
     publish: false,
@@ -17,6 +20,8 @@ export default {
     'after:bump': ['npm run build'],
   },
   plugins: {
-    '@release-it/conventional-changelog': {},
+    '@release-it/conventional-changelog': {
+      preset: 'conventionalcommits',
+    },
   },
 } satisfies Config;
