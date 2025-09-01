@@ -16,6 +16,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@actions/core": "^1.11.1",
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
     "@commitlint/types": "^17.4.4",
@@ -40,7 +41,6 @@
     "vitest": "^2.0.4"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
     "fast-glob": "^3.3.3"
   }
 }
