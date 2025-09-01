@@ -16,10 +16,10 @@ jobs:
       - name: Code lint
         run: npm run lint
 
-      - name: Setup git user
+      - name: Git config
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Bump version
         run: npx release-it --ci
