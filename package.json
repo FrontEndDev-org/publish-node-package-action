@@ -6,7 +6,8 @@
     "prepare": "husky install",
     "lint": "eslint src/**/*.ts && tsc --project tsconfig.json --noEmit",
     "test": "echo '未实现'",
-    "build": "NODE_ENV=production vite build"
+    "build": "NODE_ENV=production vite build",
+    "release": "release-it"
   },
   "author": "云淡然 <hi@ydr.me> (https://ydr.me)",
   "homepage": "https://github.com/FrontEndDev-org/publish-node-package-action",
@@ -20,6 +21,7 @@
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
     "@commitlint/types": "^17.4.4",
+    "@release-it/conventional-changelog": "^10.0.1",
     "@types/node": "20",
     "@types/prettier": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
@@ -35,7 +37,7 @@
     "lint-staged": "^13.2.2",
     "prettier": "^3.3.3",
     "react-router-dom": "^6.25.1",
-    "standard-version": "^9.5.0",
+    "release-it": "^19.0.4",
     "typescript": "^5.5.4",
     "vite": "^5.3.4",
     "vitest": "^2.0.4"
