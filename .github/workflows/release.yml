@@ -17,7 +17,7 @@ jobs:
         run: npm run lint
 
       - name: Bump version
-        run: npm run release
+        run: npx release-it --ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
