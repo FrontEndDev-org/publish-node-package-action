@@ -1,5 +1,5 @@
 name: setup node
-description: 依照 nvmrc 创建 node 环境
+description: 自动初始化 node 环境
 
 runs:
   using: composite
