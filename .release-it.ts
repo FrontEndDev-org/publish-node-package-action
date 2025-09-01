@@ -4,7 +4,7 @@ export default {
   git: {
     commit: true,
     tag: true,
-    push: false,
+    push: true,
     requireCleanWorkingDir: false,
   },
   github: {
