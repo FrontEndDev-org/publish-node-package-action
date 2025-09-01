@@ -6,7 +6,7 @@ export default {
     tag: true,
     push: true,
     requireCleanWorkingDir: false,
-    commitMessage: 'chore(release): ${git branch --show-current}',
+    commitMessage: 'chore(release): v5.x',
   },
   github: {
     release: true,
