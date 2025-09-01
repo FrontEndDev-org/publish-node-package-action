@@ -1,0 +1,35 @@
+name: release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-nvm
+
+      - name: Code lint
+        run: npm run lint
+
+      - name: Bump version
+        run: npm run release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version
+        run: node scripts/ci-version.cjs
+        id: version
+
+      - name: Tag version
+        uses: jacobsvante/tag-major-minor-action@v0
+        with:
+            major: ${{ steps.version.outputs.major }}
+            minor: ${{ steps.version.outputs.minor }}
+
+      - name: Push
+        run: git push --follow-tags
