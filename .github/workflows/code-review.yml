@@ -16,12 +16,12 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: ./.github/actions/setup-nvm
+            - uses: ./.github/actions/setup-node
             - run: npm run lint
 
     test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: ./.github/actions/setup-nvm
+            - uses: ./.github/actions/setup-node
             - run: npm run test
