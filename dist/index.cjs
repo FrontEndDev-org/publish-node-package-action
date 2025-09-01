@@ -24740,7 +24740,7 @@ function _4copyFile(pattern2, fileName, meta) {
   const targetFile = __findFile(pattern2, meta.pkgRoot);
   if (targetFile) return;
   const destFile = require$$0$a.join(meta.pkgRoot, fileName);
-  fs$9.unlinkSync(destFile);
+  if (fs$9.existsSync(destFile)) fs$9.unlinkSync(destFile);
   fs$9.copyFileSync(sourceFile, destFile);
   return () => {
     fs$9.unlinkSync(destFile);
@@ -24813,7 +24813,7 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"5.5.0"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.5.2"}`);
   runCommand("node --version");
   runCommand("npm --version");
   const token = core.getInput("token");
