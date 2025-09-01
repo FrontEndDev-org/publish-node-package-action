@@ -11,7 +11,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: ./.github/actions/setup-nvm
+      - uses: ./.github/actions/setup-node
 
       - name: Code lint
         run: npm run lint
