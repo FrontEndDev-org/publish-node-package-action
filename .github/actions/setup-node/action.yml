@@ -1,0 +1,60 @@
+name: setup
+description: 依照 nvmrc 创建 node 环境
+
+runs:
+  using: composite
+  steps:
+    - name: Set timezone
+      shell: bash
+      run: sudo timedatectl set-timezone Asia/Shanghai
+
+    - name: Check timezone
+      shell: bash
+      run: timedatectl
+
+    - name: Check package manager
+      id: check
+      shell: bash
+      run: |
+        if [ -f pnpm-lock.yaml ]; then
+          echo "pm=pnpm" >> $GITHUB_OUTPUT
+          echo "pf=pnpm-lock.yaml" >> $GITHUB_OUTPUT
+        elif [ -f yarn.lock ]; then
+          echo "pm=yarn" >> $GITHUB_OUTPUT
+          echo "pf=yarn.lock" >> $GITHUB_OUTPUT
+        elif [ -f package-lock.json ]; then
+          echo "pm=npm" >> $GITHUB_OUTPUT
+          echo "pf=package-lock.json" >> $GITHUB_OUTPUT
+        else
+          echo "unknown package manager"
+          exit 1
+        fi
+
+    - name: Setup pnpm
+      if: steps.check.outputs.pm == 'pnpm'
+      uses: pnpm/action-setup@v4 # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-data
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: ${{ steps.check.outputs.pm }}
+        cache-dependency-path: ${{ steps.check.outputs.pf }}
+
+    - name: Setup corepack
+      run: corepack enable
+      shell: bash
+
+    - name: Install dependencies use pnpm
+      if: steps.check.outputs.pm == 'pnpm'
+      run: pnpm install
+      shell: bash
+
+    - name: Install dependencies use yarn
+      if: steps.check.outputs.pm == 'yarn'
+      run: yarn install
+      shell: bash
+
+    - name: Install dependencies use npm
+      if: steps.check.outputs.pm == 'npm'
+      run: npm install
+      shell: bash
