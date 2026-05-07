@@ -37,9 +37,6 @@ const ALLOW_FIELDS = [
   'funding',
   'maintainers',
   'repository',
-  // 3rd
-  'unpkg',
-  'jsdelivr',
 ];
 // 打包时需要继承的字段
 const INHERIT_FIELDS = [
