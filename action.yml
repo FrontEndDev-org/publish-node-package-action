@@ -46,6 +46,10 @@ inputs:
     description: 同步到 npmMirror.com 超时时间（秒），默认为 30 秒
     required: false
     default: "30"
+  packageFields:
+    description: 额外指定发布时携带的 package.json 字段，逗号分隔，默认为空字符串
+    required: false
+    default: ""
 
 # https://actions-cool.github.io/github-action-branding/
 branding:

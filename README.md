@@ -58,6 +58,7 @@ jobs:
 | `disableCopyLicense` | 否   | `false`                      | 禁用复制根目录许可证文件（只在 workspace 模式启用，且软件包没有时）    |
 | `disableCopyReadme`  | 否   | `false`                      | 禁用复制根目录 README 文件（只在 workspace 模式启用，且软件包没有时）  |
 | `syncTimeout`        | 否   | `30`                         | 同步到 npmMirror.com 超时时间（秒），默认为 30 秒                      |
+| `packageFields`      | 否   | ""                           | 额外指定发布时携带的 package.json 字段，逗号分隔，默认为空字符串                     |
 
 # 出参
 
