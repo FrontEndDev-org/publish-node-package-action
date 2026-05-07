@@ -10,7 +10,9 @@ async function main() {
 
   // 1. 读取配置
   const token = core.getInput('token');
-  core.setSecret(token);
+
+  if (token) core.setSecret(token);
+
   const defaultRegistry = 'https://registry.npmjs.org';
   const inputs: PublishOptions = {
     token,
