@@ -85,9 +85,11 @@ function _1rewriteNpmrc(meta: InternalPublishMeta, options: InternalPublishOptio
     }
   };
 
-  const authURL = new URL(options.registry);
-  core.info(`append .npmrc authToken(${options.token.length})`);
-  fs.appendFileSync(npmrcFile, `\n//${authURL.host}/:_authToken=${options.token}\n`, 'utf-8');
+  if (options.token) {
+    const authURL = new URL(options.registry);
+    core.info(`append .npmrc authToken(${options.token.length})`);
+    fs.appendFileSync(npmrcFile, `\n//${authURL.host}/:_authToken=${options.token}\n`, 'utf-8');
+  }
 
   core.info('append .npmrc registry');
   fs.appendFileSync(npmrcFile, `registry=${options.registry}\n`, 'utf-8');
