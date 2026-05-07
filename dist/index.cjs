@@ -24583,14 +24583,35 @@ async function syncPackage(name, options) {
     core.info(`同步超时`);
   }
 }
-const STRIP_FIELDS = [
-  "scripts",
-  "devDependencies",
-  "config",
-  "private",
-  "publishConfig",
-  "bundleDependencies",
-  "devEngines"
+const ALLOW_FIELDS = [
+  "name",
+  "version",
+  "description",
+  "main",
+  "module",
+  "type",
+  "types",
+  "typings",
+  "sideEffects",
+  "exports",
+  "files",
+  "bin",
+  "browser",
+  "engines",
+  "os",
+  "cpu",
+  "peerDependencies",
+  "optionalDependencies",
+  "dependencies",
+  "keywords",
+  "homepage",
+  "bugs",
+  "license",
+  "author",
+  "contributors",
+  "funding",
+  "maintainers",
+  "repository"
 ];
 const INHERIT_FIELDS = [
   "keywords",
@@ -24680,14 +24701,18 @@ const fs = require('fs');
 const path = require('path');
 const pkgFile = '${meta.pkgFile}';
 
-const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
-${JSON.stringify(STRIP_FIELDS)}.forEach((field) => {
-  pkg[field] = undefined;
+const pkg1 = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
+const pkg2 = {};
+${JSON.stringify(ALLOW_FIELDS)}.forEach((field) => {
+  pkg2[field] = pkg1[field];
+});
+${JSON.stringify(options.packageFields)}.forEach((field) => {
+  pkg2[field] = pkg1[field];
 });
 ${JSON.stringify(inheritValues)}.forEach(({field, value}) => {
-  pkg[field] = typeof pkg[field] === 'undefined' ? value : pkg[field];
+  pkg2[field] = typeof pkg2[field] === 'undefined' ? value : pkg2[field];
 });
-fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
+fs.writeFileSync(pkgFile, JSON.stringify(pkg2, null, 2));
     `;
   const prePackJS = require$$0$a.join(require$$0.tmpdir(), `prepack-${Date.now()}.js`);
   fs$9.writeFileSync(prePackJS, prePackCode);
@@ -24815,11 +24840,11 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"5.5.3"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.6.0"}`);
   runCommand("node --version");
   runCommand("npm --version");
   const token = core.getInput("token");
-  core.setSecret(token);
+  if (token) core.setSecret(token);
   const defaultRegistry = "https://registry.npmjs.org";
   const inputs = {
     token,
@@ -24832,7 +24857,8 @@ async function main() {
     disableCopyLicense: core.getInput("disableCopyLicense") === "true",
     disableCopyReadme: core.getInput("disableCopyReadme") === "true",
     syncTimeout: Number(core.getInput("syncTimeout") || "30"),
-    registry: core.getInput("repository") || defaultRegistry
+    registry: core.getInput("repository") || defaultRegistry,
+    packageFields: core.getInput("packageFields")?.split(",") || []
   };
   const defaults = {
     dryRun: false,
@@ -24845,7 +24871,8 @@ async function main() {
     disableCopyLicense: false,
     disableCopyReadme: false,
     syncTimeout: 30,
-    registry: defaultRegistry
+    registry: defaultRegistry,
+    packageFields: []
   };
   const options = {};
   for (const [key, defaultVal] of Object.entries(defaults)) {

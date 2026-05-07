@@ -1,5 +1,18 @@
 # Changelog
 
+# [5.6.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.5.3...v5.6.0) (2026-05-07)
+
+
+### Bug Fixes
+
+* 仅在提供 token 时设置为秘密 ([2780277](https://github.com/FrontEndDev-org/publish-node-package-action/commit/278027768f8a7dbae9fb1e0b5359113e0deecfc3))
+* 移除不再支持的 unpkg 和 jsdelivr 字段 ([f3d05d4](https://github.com/FrontEndDev-org/publish-node-package-action/commit/f3d05d490df67361c1d6e0d7bb89e5c940fc6394))
+
+
+### Features
+
+* 添加 packageFields 选项以支持自定义打包字段 ([8f03923](https://github.com/FrontEndDev-org/publish-node-package-action/commit/8f03923f4991e64a124e046b7934aa313357f473))
+
 ## [5.5.3](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.5.2...v5.5.3) (2026-05-07)
 
 
