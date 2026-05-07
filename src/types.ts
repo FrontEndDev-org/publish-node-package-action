@@ -10,6 +10,7 @@ export type PublishOptions = {
   disableCopyLicense: boolean;
   disableCopyReadme: boolean;
   registry: string;
+  packageFields: string[];
 };
 
 export type InternalPublishOptions = Required<PublishOptions>;

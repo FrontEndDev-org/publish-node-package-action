@@ -26,6 +26,7 @@ async function main() {
     disableCopyReadme: core.getInput('disableCopyReadme') === 'true',
     syncTimeout: Number(core.getInput('syncTimeout') || '30'),
     registry: core.getInput('repository') || defaultRegistry,
+    packageFields: core.getInput('packageFields')?.split(',') || [],
   };
   const defaults: InternalPublishOptions = {
     dryRun: false,
@@ -39,6 +40,7 @@ async function main() {
     disableCopyReadme: false,
     syncTimeout: 30,
     registry: defaultRegistry,
+    packageFields: [],
   };
   const options = {} as InternalPublishOptions;
 

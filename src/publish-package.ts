@@ -7,15 +7,39 @@ import { runCommand } from './utils';
 import { syncPackage } from './sync-package';
 import { glob } from 'fast-glob';
 
-// 打包时需要修剪的字段
-const STRIP_FIELDS = [
-  'scripts',
-  'devDependencies',
-  'config',
-  'private',
-  'publishConfig',
-  'bundleDependencies',
-  'devEngines',
+// 打包时允许的字段
+const ALLOW_FIELDS = [
+  'name',
+  'version',
+  'description',
+  'main',
+  'module',
+  'type',
+  'types',
+  'typings',
+  'sideEffects',
+  'exports',
+  'files',
+  'bin',
+  'browser',
+  'engines',
+  'os',
+  'cpu',
+  'peerDependencies',
+  'optionalDependencies',
+  'dependencies',
+  'keywords',
+  'homepage',
+  'bugs',
+  'license',
+  'author',
+  'contributors',
+  'funding',
+  'maintainers',
+  'repository',
+  // 3rd
+  'unpkg',
+  'jsdelivr',
 ];
 // 打包时需要继承的字段
 const INHERIT_FIELDS = [
@@ -122,14 +146,18 @@ const fs = require('fs');
 const path = require('path');
 const pkgFile = '${meta.pkgFile}';
 
-const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
-${JSON.stringify(STRIP_FIELDS)}.forEach((field) => {
-  pkg[field] = undefined;
+const pkg1 = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
+const pkg2 = {};
+${JSON.stringify(ALLOW_FIELDS)}.forEach((field) => {
+  pkg2[field] = pkg1[field];
+});
+${JSON.stringify(options.packageFields)}.forEach((field) => {
+  pkg2[field] = pkg1[field];
 });
 ${JSON.stringify(inheritValues)}.forEach(({field, value}) => {
-  pkg[field] = typeof pkg[field] === 'undefined' ? value : pkg[field];
+  pkg2[field] = typeof pkg2[field] === 'undefined' ? value : pkg2[field];
 });
-fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
+fs.writeFileSync(pkgFile, JSON.stringify(pkg2, null, 2));
     `;
   const prePackJS = path.join(os.tmpdir(), `prepack-${Date.now()}.js`);
   fs.writeFileSync(prePackJS, prePackCode);
