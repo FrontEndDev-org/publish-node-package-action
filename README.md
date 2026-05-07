@@ -41,15 +41,13 @@ jobs:
       - run: npm run build
       - run: npm run test
       - uses: FrontEndDev-org/publish-node-package-action@v5
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
 ```
 
 # 入参
 
 | 名称                 | 必填 | 默认值                       | 描述                                                                   |
 | -------------------- | ---- | ---------------------------- | ---------------------------------------------------------------------- |
-| `token`              | 是   | 无                           | 软件包源的授权令牌                                                     |
+| `token`              | 否   | ""                           | 软件包源的授权令牌，未指定时表示使用可信源发布模式                                                     |
 | `registry`           | 否   | `https://registry.npmjs.org` | 软件包源地址                                                           |
 | `tag`                | 否   | `latest`                     | 版本标签，默认为 latest                                                |
 | `dryRun`             | 否   | `false`                      | 模拟发布                                                               |

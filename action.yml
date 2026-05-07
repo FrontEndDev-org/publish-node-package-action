@@ -5,7 +5,7 @@ description: 发布 Node.js 软件包
 inputs:
   token:
     description: 软件包源的授权令牌
-    required: true
+    required: false
   registry:
     description: 软件包源地址
     required: false
