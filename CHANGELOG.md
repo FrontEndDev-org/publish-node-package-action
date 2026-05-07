@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.5.3](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.5.2...v5.5.3) (2026-05-07)
+
+
+### Bug Fixes
+
+* 仅在提供 token 时追加 .npmrc 认证信息 ([b4b3728](https://github.com/FrontEndDev-org/publish-node-package-action/commit/b4b372855c686ab2af370290ea12301c28af5699))
+
 ## [5.5.2](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.5.1...v5.5.2) (2025-09-01)
 
 

@@ -24647,11 +24647,13 @@ function _1rewriteNpmrc(meta, options) {
       fs$9.unlinkSync(npmrcFile);
     }
   };
-  const authURL = new URL(options.registry);
-  core.info(`append .npmrc authToken(${options.token.length})`);
-  fs$9.appendFileSync(npmrcFile, `
+  if (options.token) {
+    const authURL = new URL(options.registry);
+    core.info(`append .npmrc authToken(${options.token.length})`);
+    fs$9.appendFileSync(npmrcFile, `
 //${authURL.host}/:_authToken=${options.token}
 `, "utf-8");
+  }
   core.info("append .npmrc registry");
   fs$9.appendFileSync(npmrcFile, `registry=${options.registry}
 `, "utf-8");
@@ -24813,7 +24815,7 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"5.5.2"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.5.3"}`);
   runCommand("node --version");
   runCommand("npm --version");
   const token = core.getInput("token");
