@@ -16,6 +16,7 @@ const ALLOW_FIELDS = [
   'module',
   'type',
   'types',
+  'typesVersions',
   'typings',
   'sideEffects',
   'exports',
