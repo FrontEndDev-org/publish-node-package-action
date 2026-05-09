@@ -24591,6 +24591,7 @@ const ALLOW_FIELDS = [
   "module",
   "type",
   "types",
+  "typesVersions",
   "typings",
   "sideEffects",
   "exports",
@@ -24840,7 +24841,7 @@ async function publishPackages(options) {
   }
 }
 async function main() {
-  core.info(`using ${"publish-node-package-action"}@${"5.6.0"}`);
+  core.info(`using ${"publish-node-package-action"}@${"5.7.0"}`);
   runCommand("node --version");
   runCommand("npm --version");
   const token = core.getInput("token");

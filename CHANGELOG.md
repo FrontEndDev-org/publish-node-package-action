@@ -1,5 +1,12 @@
 # Changelog
 
+# [5.7.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.6.0...v5.7.0) (2026-05-09)
+
+
+### Features
+
+* **publish-package:** add typesVersions to allowed fields ([72327d1](https://github.com/FrontEndDev-org/publish-node-package-action/commit/72327d1fea5793904e434d1cfcf3eccf58a5f541))
+
 # [5.6.0](https://github.com/FrontEndDev-org/publish-node-package-action/compare/v5.5.3...v5.6.0) (2026-05-07)
 
 
